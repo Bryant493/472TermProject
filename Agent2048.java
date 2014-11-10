@@ -18,7 +18,7 @@ public class Agent2048 extends JPanel
 	{
 		game.resetGame();
 
-		for (int i = 0; i < 1000000000; i++)
+		for (int i = 0; i < 100; i++)
 		{
 			if (i % 10 == 0)
 			{
