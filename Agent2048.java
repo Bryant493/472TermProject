@@ -31,6 +31,35 @@ public class Agent2048 extends JPanel
 			}
 		}
 	}
+	
+	//get next move (basic outline)
+	public Tree expectMiniMax(Tree node, int depth)
+	{	
+		if(depth == 0 || node.getChildren().size() == 0)
+		{
+			//return node;
+		}
+		
+		else if(depth % 2 == 0)
+		{
+			//Expect next node
+			for(Tree child : node.getChildren())
+			{
+				//move = null;
+			}
+		}
+		
+		else if(depth % 2 != 0)
+		{
+			//Max of next node
+			for(Tree child : node.getChildren())
+			{
+				//not sure if correct
+				//move = node.getHVal() > expectMiniMax(child, depth - 1, move).getHVal() ? node : child;
+			}
+		}
+		return null;
+	}
 
 	public static void main(String args[]) throws InterruptedException
 	{
