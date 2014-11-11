@@ -1,5 +1,7 @@
 package project;
 
+import java.util.Arrays;
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
@@ -23,17 +25,23 @@ public class Agent2048 extends JPanel
 			if (i % 10 == 0)
 			{
 				game.up();
+				game.repaint();
+				Thread.sleep(250); 
 				game.right();
+				game.repaint();
+				Thread.sleep(250); 
 				game.left();
+				game.repaint();
+				Thread.sleep(250); 
 				game.down();
 				game.repaint();
-				Thread.sleep(1000); 
+				Thread.sleep(250); 
 			}
 		}
-	}
+	}	
 	
 	//get next move (basic outline)
-	public Tree expectMiniMax(Tree node, int depth)
+	public Tree expectMiniMax(Tree node, int depth, Tree move)
 	{	
 		if(depth == 0 || node.getChildren().size() == 0)
 		{
@@ -55,16 +63,28 @@ public class Agent2048 extends JPanel
 			for(Tree child : node.getChildren())
 			{
 				//not sure if correct
-				//move = node.getHVal() > expectMiniMax(child, depth - 1, move).getHVal() ? node : child;
+				move = node.getHVal() > expectMiniMax(child, depth - 1, move).getHVal() ? node : child;
 			}
 		}
-		return null;
+		return move;
+	}
+	
+	public static void printTiles(Tile[] tiles)
+	{
+		for(Tile t : tiles)
+		{
+			System.out.print(t.value);
+		}
+		System.out.println("\n");
 	}
 
 	public static void main(String args[]) throws InterruptedException
 	{
 		Game2048 twentyFortyEight = new Game2048();
 		Agent2048 agent = new Agent2048(twentyFortyEight);
+//		printTiles(twentyFortyEight.getMyTiles());
+//		printTiles(twentyFortyEight.whatIfLeft(Arrays.copyOf(twentyFortyEight.getMyTiles(), twentyFortyEight.getMyTiles().length)));
+//		printTiles(twentyFortyEight.getMyTiles());
 		JFrame game = new JFrame();
 		game.setTitle("2048 Game");
 		game.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);

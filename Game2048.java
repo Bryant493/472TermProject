@@ -22,6 +22,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -57,8 +58,8 @@ public class Game2048 extends JPanel
 		{
 			myTiles[i] = new Tile();
 		}
-		addTile();
-		addTile();
+		addTile(false, null);
+		addTile(false, null);
 	}
 
 	public void left()
@@ -68,7 +69,7 @@ public class Game2048 extends JPanel
 		{
 			Tile[] line = getLine(i);
 			Tile[] merged = mergeLine(moveLine(line));
-			setLine(i, merged);
+			setLine(i, merged, false, null);
 			if (!needAddTile && !compare(line, merged))
 			{
 				needAddTile = true;
@@ -76,7 +77,7 @@ public class Game2048 extends JPanel
 		}
 		if (needAddTile)
 		{
-			addTile();
+			addTile(false, null);
 		}
 	}
 
@@ -106,10 +107,18 @@ public class Game2048 extends JPanel
 		return myTiles[x + y * 4];
 	}
 
-	private void addTile()
+	private void addTile(boolean whatIf, Tile[] arr)
 	{
-		List<Tile> list = availableSpace();
-		if (!availableSpace().isEmpty())
+		List<Tile> list;
+		if(whatIf)
+		{
+			list = availableSpace(true, arr);
+		}
+		else
+		{
+			list = availableSpace(false, null);
+		}
+		if (!availableSpace(false, null).isEmpty())
 		{
 			int index = (int) (Math.random() * list.size()) % list.size();
 			Tile emptyTime = list.get(index);
@@ -117,14 +126,27 @@ public class Game2048 extends JPanel
 		}
 	}
 
-	private List<Tile> availableSpace()
+	private List<Tile> availableSpace(boolean whatIf, Tile[] arr)
 	{
 		final List<Tile> list = new ArrayList<Tile>(16);
-		for (Tile t : myTiles)
+		if (whatIf)
 		{
-			if (t.isEmpty())
+			for (Tile t : arr)
 			{
-				list.add(t);
+				if (t.isEmpty())
+				{
+					list.add(t);
+				}
+			}
+		}
+		else
+		{
+			for (Tile t : myTiles)
+			{
+				if (t.isEmpty())
+				{
+					list.add(t);
+				}
 			}
 		}
 		return list;
@@ -132,7 +154,7 @@ public class Game2048 extends JPanel
 
 	private boolean isFull()
 	{
-		return availableSpace().size() == 0;
+		return availableSpace(false, null).size() == 0;
 	}
 
 	boolean canMove()
@@ -269,14 +291,22 @@ public class Game2048 extends JPanel
 		Tile[] result = new Tile[4];
 		for (int i = 0; i < 4; i++)
 		{
+
 			result[i] = tileAt(i, index);
 		}
 		return result;
 	}
 
-	private void setLine(int index, Tile[] re)
+	private void setLine(int index, Tile[] re, boolean whatIf, Tile[] arr)
 	{
-		System.arraycopy(re, 0, myTiles, index * 4, 4);
+		if (whatIf)
+		{
+			System.arraycopy(re, 0, arr, index * 4, 4);
+		}
+		else
+		{
+			System.arraycopy(re, 0, myTiles, index * 4, 4);
+		}
 	}
 
 	@Override
@@ -345,56 +375,91 @@ public class Game2048 extends JPanel
 		return arg * (TILES_MARGIN + TILE_SIZE) + TILES_MARGIN;
 	}
 
+	public Tile[] whatIfLeft(Tile[] whatIf)
+	{
 
-//	public static void main(String[] args)
-//	{
-//		JFrame game = new JFrame();
-//		game.setTitle("2048 Game");
-//		game.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-//		game.setSize(340, 400);
-//		game.setResizable(false);
-//		game.add(new Game2048());
-//		game.setLocationRelativeTo(null);
-//		game.setVisible(true);
-//	}
+		boolean needAddTile = false;
+		for (int i = 0; i < 4; i++)
+		{
+			Tile[] line = getLine(i);
+			Tile[] merged = mergeLine(moveLine(line));
+			setLine(i, merged, true, whatIf);
+			if (!needAddTile && !compare(line, merged))
+			{
+				needAddTile = true;
+			}
+		}
+		if (needAddTile)
+		{
+			addTile(true, whatIf);
+		}
+		return whatIf;
+	}
 	
+	public Tile[] whatIfRight(Tile[] whatIf)
+	{
+		whatIf = rotate(180);
+		whatIfLeft(whatIf);
+		whatIf = rotate(180);
+		return whatIf;
+	}
+
+	public Tile[] whatIfUp(Tile[] whatIf)
+	{
+		whatIf = rotate(270);
+		whatIfLeft(whatIf);
+		whatIf = rotate(90);
+		return whatIf;
+	}
 	
-//	addKeyListener(new KeyAdapter()
-//	{
-//		@Override
-//		public void keyPressed(KeyEvent e)
-//		{
-//			if (e.getKeyCode() == KeyEvent.VK_ESCAPE)
-//			{
-//				resetGame();
-//			}
-//			if (!canMove())
-//			{
-//				myLose = true;
-//			}
-//			if (!myWin && !myLose)
-//			{
-//				switch (e.getKeyCode())
-//				{
-//				case KeyEvent.VK_LEFT:
-//					left();
-//					break;
-//				case KeyEvent.VK_RIGHT:
-//					right();
-//					break;
-//				case KeyEvent.VK_DOWN:
-//					down();
-//					break;
-//				case KeyEvent.VK_UP:
-//					up();
-//					break;
-//				}
-//			}
-//			if (!myWin && !canMove())
-//			{
-//				myLose = true;
-//			}
-//			repaint();
-//		}
-//	});
+	public Tile[] whatIfDown(Tile[] whatIf)
+	{
+		whatIf = rotate(90);
+		whatIfLeft(whatIf);
+		whatIf = rotate(270);
+		return whatIf;
+	}
+
+	public Tile[] getMyTiles()
+	{
+		return myTiles;
+	}
+	// addKeyListener(new KeyAdapter()
+	// {
+	// @Override
+	// public void keyPressed(KeyEvent e)
+	// {
+	// if (e.getKeyCode() == KeyEvent.VK_ESCAPE)
+	// {
+	// resetGame();
+	// }
+	// if (!canMove())
+	// {
+	// myLose = true;
+	// }
+	// if (!myWin && !myLose)
+	// {
+	// switch (e.getKeyCode())
+	// {
+	// case KeyEvent.VK_LEFT:
+	// left();
+	// break;
+	// case KeyEvent.VK_RIGHT:
+	// right();
+	// break;
+	// case KeyEvent.VK_DOWN:
+	// down();
+	// break;
+	// case KeyEvent.VK_UP:
+	// up();
+	// break;
+	// }
+	// }
+	// if (!myWin && !canMove())
+	// {
+	// myLose = true;
+	// }
+	// repaint();
+	// }
+	// });
 }
