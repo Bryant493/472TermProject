@@ -9,8 +9,9 @@ public class Tree
 	private ArrayList<Tree> children;
 	private int hVal;
 
-	public Tree()
+	public Tree(Tile[] data)
     {
+		this.data = data;
        	children = new ArrayList<Tree>();
     }
 

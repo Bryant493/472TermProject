@@ -67,7 +67,7 @@ public class Game2048 extends JPanel
 		boolean needAddTile = false;
 		for (int i = 0; i < 4; i++)
 		{
-			Tile[] line = getLine(i);
+			Tile[] line = getLine(i, false, null);
 			Tile[] merged = mergeLine(moveLine(line));
 			setLine(i, merged, false, null);
 			if (!needAddTile && !compare(line, merged))
@@ -102,27 +102,40 @@ public class Game2048 extends JPanel
 		myTiles = rotate(270);
 	}
 
-	private Tile tileAt(int x, int y)
+	private Tile tileAt(int x, int y, boolean whatIf, Tile[] arr)
 	{
-		return myTiles[x + y * 4];
+		if(whatIf)
+		{
+			return arr[x + y * 4];
+		}
+		else
+		{
+			return myTiles[x + y * 4];
+		}
 	}
 
 	private void addTile(boolean whatIf, Tile[] arr)
 	{
-		List<Tile> list;
+		List<Tile> list = new ArrayList<Tile>(16);
 		if(whatIf)
 		{
 			list = availableSpace(true, arr);
+			if (!availableSpace(true, arr).isEmpty())
+			{
+				int index = (int) (Math.random() * list.size()) % list.size();
+				Tile emptyTime = list.get(index);
+				emptyTime.value = Math.random() < 0.9 ? 2 : 4;
+			}
 		}
 		else
 		{
 			list = availableSpace(false, null);
-		}
-		if (!availableSpace(false, null).isEmpty())
-		{
-			int index = (int) (Math.random() * list.size()) % list.size();
-			Tile emptyTime = list.get(index);
-			emptyTime.value = Math.random() < 0.9 ? 2 : 4;
+			if (!availableSpace(false, null).isEmpty())
+			{
+				int index = (int) (Math.random() * list.size()) % list.size();
+				Tile emptyTime = list.get(index);
+				emptyTime.value = Math.random() < 0.9 ? 2 : 4;
+			}
 		}
 	}
 
@@ -167,8 +180,8 @@ public class Game2048 extends JPanel
 		{
 			for (int y = 0; y < 4; y++)
 			{
-				Tile t = tileAt(x, y);
-				if ((x < 3 && t.value == tileAt(x + 1, y).value) || ((y < 3) && t.value == tileAt(x, y + 1).value))
+				Tile t = tileAt(x, y, false, null);
+				if ((x < 3 && t.value == tileAt(x + 1, y, false, null).value) || ((y < 3) && t.value == tileAt(x, y + 1, false, null).value))
 				{
 					return true;
 				}
@@ -218,7 +231,7 @@ public class Game2048 extends JPanel
 			{
 				int newX = (x * cos) - (y * sin) + offsetX;
 				int newY = (x * sin) + (y * cos) + offsetY;
-				newTiles[(newX) + (newY) * 4] = tileAt(x, y);
+				newTiles[(newX) + (newY) * 4] = tileAt(x, y, false, null);
 			}
 		}
 		return newTiles;
@@ -286,13 +299,13 @@ public class Game2048 extends JPanel
 		}
 	}
 
-	private Tile[] getLine(int index)
+	private Tile[] getLine(int index, boolean whatIf, Tile[] arr)
 	{
 		Tile[] result = new Tile[4];
 		for (int i = 0; i < 4; i++)
 		{
 
-			result[i] = tileAt(i, index);
+			result[i] = tileAt(i, index, whatIf, arr);
 		}
 		return result;
 	}
@@ -381,7 +394,7 @@ public class Game2048 extends JPanel
 		boolean needAddTile = false;
 		for (int i = 0; i < 4; i++)
 		{
-			Tile[] line = getLine(i);
+			Tile[] line = getLine(i, true, whatIf);
 			Tile[] merged = mergeLine(moveLine(line));
 			setLine(i, merged, true, whatIf);
 			if (!needAddTile && !compare(line, merged))
@@ -389,10 +402,10 @@ public class Game2048 extends JPanel
 				needAddTile = true;
 			}
 		}
-		if (needAddTile)
-		{
-			addTile(true, whatIf);
-		}
+//		if (needAddTile)
+//		{
+//			addTile(true, whatIf);
+//		}
 		return whatIf;
 	}
 	
