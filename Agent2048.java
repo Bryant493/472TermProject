@@ -97,6 +97,7 @@ public class Agent2048 extends JPanel
 		
 		else if(depth % 2 == 0)
 		{
+			value = 0;
 			//Expect next node
 			for(Tree child : node.getChildren())
 			{
@@ -107,6 +108,7 @@ public class Agent2048 extends JPanel
 		
 		else if(depth % 2 != 0)
 		{
+			value = Integer.MAX_VALUE;
 			//Max of next node
 			for(Tree child : node.getChildren())
 			{
