@@ -6,16 +6,33 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
+/**
+ * AI Agent that controls a 2048 game with an 
+ * expectimax algorithm in order to win every time!
+ * 
+ * @author Bryant
+ */
 public class Agent2048 extends JPanel
 {
+	/**
+	 * 2048 game to be manipulated
+	 */
 	private Game2048 game;
 
+	/**
+	 * Constructs an Agent 2048 object with a given 2048 game
+	 */
 	public Agent2048(Game2048 givenGame)
 	{
 		this.game = givenGame;
 		game.setFocusable(true);
 	}
 
+	/**
+	 * Runs the AI Agent by selecting moves and performing them by generating a game tree and 
+	 * calculating the hValues based on an expectimax algorithm
+	 * @throws InterruptedException
+	 */
 	public void runAI() throws InterruptedException
 	{
 		game.resetGame();
@@ -71,7 +88,14 @@ public class Agent2048 extends JPanel
 		}
 	}	
 	
-	//find the next node to choose with the best hVal
+	/**
+	 * Find the next node to choose with the best hVal using a recursive expectimax algorithm
+	 * @param node - start node
+	 * @param depth - how far down the tree this algorithm should go
+	 * @param value - the hVal of the node
+	 * @param max - which level of the tree we are currently on (i.e Max or Expect)
+	 * @return value
+	 */
 	public int expectiMiniMax(Node node, int depth, int value, boolean max)
 	{	
 		if(depth == 0 || node.getChildren().size() == 0)
