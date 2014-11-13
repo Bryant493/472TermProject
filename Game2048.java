@@ -114,7 +114,7 @@ public class Game2048 extends JPanel
 		}
 	}
 
-	private void addTile(boolean whatIf, Tile[] arr)
+	public void addTile(boolean whatIf, Tile[] arr)
 	{
 		List<Tile> list = new ArrayList<Tile>(16);
 		if(whatIf)
