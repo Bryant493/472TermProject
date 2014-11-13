@@ -25,6 +25,11 @@ class Tile
 	{
 		return value < 16 ? new Color(0x776e65) : new Color(0xf9f6f2);
 	}
+	
+	public boolean equals(Tile other)
+	{
+		return this.value == other.value;
+	}
 
 	public Color getBackground()
 	{

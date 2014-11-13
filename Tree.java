@@ -1,6 +1,7 @@
 package project;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Tree
 {
@@ -53,5 +54,10 @@ public class Tree
 	public void setHVal(int hVal)
 	{
 		this.hVal = hVal;
+	}
+	
+	public boolean equals(Tree other)
+	{
+		return Arrays.equals(this.getData(), other.getData());
 	}
 }

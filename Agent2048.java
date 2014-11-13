@@ -19,101 +19,85 @@ public class Agent2048 extends JPanel
 	public void runAI() throws InterruptedException
 	{
 		game.resetGame();
+		Tree current = new Tree(game.getMyTiles());
+		buildTree(current);
 		int hVal = 0;
-		Tree start = new Tree(game.getMyTiles());
-		buildTree(start);
-		
+		hVal = expectiMiniMax(current, 10, hVal, true);
 		while(!game.myWin)
 		{
-			hVal = expectiMiniMax(start, 10, hVal);
-			for(int i = 0; i < start.getChildren().size(); i++)
+			for(int i = 0; i < current.getChildren().size(); i++)
 			{
 				//find the child with the calculated expectiMiniMaxValue
-				if(start.getChildren().get(i).getHVal() == hVal)
+				if(current.getChildren().get(i).getHVal() == hVal)
 				{
 					// left
 					if(i == 0)
 					{
 						game.left();
-						start = start.getChildren().get(i);
+						//move to this node in tree
+						current = current.getChildren().get(i);
 						break;
 					}
 					//right
 					else if(i == 2)
 					{
 						game.right();
-						start = start.getChildren().get(i);
+						//move to this node in tree
+						current = current.getChildren().get(i);
 						break;
 					}
 					//up
 					else if(i == 3)
 					{
 						game.up();
-						start = start.getChildren().get(i);
+						//move to this node in tree
+						current = current.getChildren().get(i);
 						break;
 					}
 					//down
 					else if(i == 4)
 					{
 						game.down();
-						start = start.getChildren().get(i);
+						//move to this node in tree
+						current = current.getChildren().get(i);
 						break;
 					}
 				}
 			}
-			//must now add the random tile
-			//game.addTile();
+			//add random tile
+			game.addTile(false, null);
+			//follow down the tree
+			current = findCurrent(current, new Tree(game.getMyTiles()));
 		}
-		
-//		game.resetGame();
-//
-//		for (int i = 0; i < 100; i++)
-//		{
-//			if (i % 10 == 0)
-//			{
-//				game.up();
-//				game.repaint();
-//				Thread.sleep(250); 
-//				game.right();
-//				game.repaint();
-//				Thread.sleep(250); 
-//				game.left();
-//				game.repaint();
-//				Thread.sleep(250); 
-//				game.down();
-//				game.repaint();
-//				Thread.sleep(250); 
-//			}
-//		}
 	}	
 	
 	//find the next node to choose with the best hVal
-	public int expectiMiniMax(Tree node, int depth, int value)
+	public int expectiMiniMax(Tree node, int depth, int value, boolean max)
 	{	
 		if(depth == 0 || node.getChildren().size() == 0)
 		{
 			return node.getHVal();
 		}
 		
-		else if(depth % 2 == 0)
+		else if(max == false)
 		{
 			value = 0;
 			//Expect next node
 			for(Tree child : node.getChildren())
 			{
 				//not sure if correct
-				value += node.getHVal() * expectiMiniMax(child, depth - 1, value);
+				value += node.getHVal() * expectiMiniMax(child, depth - 1, value, true);
 			}
 		}
 		
-		else if(depth % 2 != 0)
+		else if(max == true)
 		{
 			value = Integer.MAX_VALUE;
 			//Max of next node
 			for(Tree child : node.getChildren())
 			{
 				//not sure if correct
-				value = node.getHVal() > expectiMiniMax(child, depth - 1, value) ? node.getHVal() : child.getHVal();
+				value = node.getHVal() > expectiMiniMax(child, depth - 1, value, false) ? node.getHVal() : child.getHVal();
 			}
 		}
 		return value;
@@ -131,6 +115,18 @@ public class Agent2048 extends JPanel
 			System.out.print(t.value);
 		}
 		System.out.println("\n");
+	}
+	
+	private Tree findCurrent(Tree current, Tree next)
+	{
+		for(Tree t : current.getChildren())
+		{
+			if(t.equals(next))
+			{
+				return t;
+			}
+		}
+		return null;
 	}
 
 	public static void main(String args[]) throws InterruptedException
