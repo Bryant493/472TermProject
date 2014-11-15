@@ -187,6 +187,11 @@ public class Game2048 extends JPanel
 
 	private Tile[] rotate(int angle)
 	{
+		return rotateUsingTiles(angle, myTiles);
+	}
+	
+	private Tile[] rotateUsingTiles(int angle, Tile[] tiles)
+	{
 		Tile[] newTiles = new Tile[4 * 4];
 		int offsetX = 3, offsetY = 3;
 		if (angle == 90)
@@ -360,31 +365,34 @@ public class Game2048 extends JPanel
 	{
 		Tile[] clonedTiles = cloneTiles(whatIf);
 		leftUsingTiles(clonedTiles);
-		return whatIf;
+		return clonedTiles;
 	}
 	
 	public Tile[] whatIfRight(Tile[] whatIf)
 	{
-		whatIf = rotate(180);
-		whatIfLeft(whatIf);
-		whatIf = rotate(180);
-		return whatIf;
+		Tile[] clonedTiles = cloneTiles(whatIf);
+		whatIf = rotateUsingTiles(180, clonedTiles);
+		leftUsingTiles(clonedTiles);
+		whatIf = rotateUsingTiles(180, clonedTiles);
+		return clonedTiles;
 	}
 
 	public Tile[] whatIfUp(Tile[] whatIf)
 	{
-		whatIf = rotate(270);
-		whatIfLeft(whatIf);
-		whatIf = rotate(90);
-		return whatIf;
+		Tile[] clonedTiles = cloneTiles(whatIf);
+		whatIf = rotateUsingTiles(270, clonedTiles);
+		leftUsingTiles(clonedTiles);
+		whatIf = rotateUsingTiles(90, clonedTiles);
+		return clonedTiles;
 	}
 	
 	public Tile[] whatIfDown(Tile[] whatIf)
 	{
-		whatIf = rotate(90);
-		whatIfLeft(whatIf);
-		whatIf = rotate(270);
-		return whatIf;
+		Tile[] clonedTiles = cloneTiles(whatIf);
+		whatIf = rotateUsingTiles(90, clonedTiles);
+		leftUsingTiles(clonedTiles);
+		whatIf = rotateUsingTiles(270, clonedTiles);
+		return clonedTiles;
 	}
 
 	public Tile[] getMyTiles()
