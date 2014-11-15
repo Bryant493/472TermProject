@@ -30,6 +30,10 @@ class Tile
 	{
 		return this.value == other.value;
 	}
+	
+	public Tile clone() {
+		return new Tile(this.value);
+	}
 
 	public Color getBackground()
 	{

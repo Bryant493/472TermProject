@@ -84,7 +84,7 @@ public class Agent2048 extends JPanel
 				}
 			}
 			//add random tile
-			game.addTile(false, null);
+			game.addTile(game.getMyTiles());
 			//follow down the tree
 			current = findCurrent(current, new Node(game.getMyTiles()));
 			game.repaint();

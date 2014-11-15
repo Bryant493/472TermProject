@@ -22,7 +22,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -58,116 +57,92 @@ public class Game2048 extends JPanel
 		{
 			myTiles[i] = new Tile();
 		}
-		addTile(false, null);
-		addTile(false, null);
+		addTile(myTiles);
+		addTile(myTiles);
 	}
 
 	public void left()
 	{
+		boolean shifted = leftUsingTiles(myTiles);
+		if(shifted) {
+			addTile(myTiles);
+		}
+	}
+	
+	public void right() {
+		myTiles = rotate(180);
+		left();
+		myTiles = rotate(180);
+	}
+	
+	public void up() {
+		myTiles = rotate(270);
+		left();
+		myTiles = rotate(90);
+	}
+	
+	public void down() {
+		myTiles = rotate(90);
+		left();
+		myTiles = rotate(270);
+	}
+
+	private boolean leftUsingTiles(Tile[] tiles) {
 		boolean needAddTile = false;
 		for (int i = 0; i < 4; i++)
 		{
-			Tile[] line = getLine(i, false, null);
+			Tile[] line = getLine(i, tiles);
 			Tile[] merged = mergeLine(moveLine(line));
-			setLine(i, merged, false, null);
+			setLine(i, merged, tiles);
 			if (!needAddTile && !compare(line, merged))
 			{
 				needAddTile = true;
 			}
 		}
-		if (needAddTile)
-		{
-			addTile(false, null);
-		}
+		return needAddTile;
 	}
 
-	public void right()
+	private Tile tileAt(int x, int y, Tile[] tiles)
 	{
-		myTiles = rotate(180);
-		left();
-		myTiles = rotate(180);
+		return tiles[x + y * 4];
 	}
 
-	public void up()
-	{
-		myTiles = rotate(270);
-		left();
-		myTiles = rotate(90);
-	}
-
-	public void down()
-	{
-		myTiles = rotate(90);
-		left();
-		myTiles = rotate(270);
-	}
-
-	private Tile tileAt(int x, int y, boolean whatIf, Tile[] arr)
-	{
-		if(whatIf)
-		{
-			return arr[x + y * 4];
-		}
-		else
-		{
-			return myTiles[x + y * 4];
-		}
-	}
-
-	public void addTile(boolean whatIf, Tile[] arr)
+	public void addTile(Tile[] tiles)
 	{
 		List<Tile> list = new ArrayList<Tile>(16);
-		if(whatIf)
+		list = availableSpace(tiles);
+		if (!availableSpace(tiles).isEmpty())
 		{
-			list = availableSpace(true, arr);
-			if (!availableSpace(true, arr).isEmpty())
-			{
-				int index = (int) (Math.random() * list.size()) % list.size();
-				Tile emptyTime = list.get(index);
-				emptyTime.value = Math.random() < 0.9 ? 2 : 4;
-			}
-		}
-		else
-		{
-			list = availableSpace(false, null);
-			if (!availableSpace(false, null).isEmpty())
-			{
-				int index = (int) (Math.random() * list.size()) % list.size();
-				Tile emptyTime = list.get(index);
-				emptyTime.value = Math.random() < 0.9 ? 2 : 4;
-			}
+			int index = (int) (Math.random() * list.size()) % list.size();
+			Tile emptyTime = list.get(index);
+			emptyTime.value = Math.random() < 0.9 ? 2 : 4;
 		}
 	}
 
-	public List<Tile> availableSpace(boolean whatIf, Tile[] arr)
+	public List<Tile> availableSpace(Tile[] tiles)
 	{
 		final List<Tile> list = new ArrayList<Tile>(16);
-		if (whatIf)
+		for (Tile t : tiles)
 		{
-			for (Tile t : arr)
+			if (t.isEmpty())
 			{
-				if (t.isEmpty())
-				{
-					list.add(t);
-				}
-			}
-		}
-		else
-		{
-			for (Tile t : myTiles)
-			{
-				if (t.isEmpty())
-				{
-					list.add(t);
-				}
+				list.add(t);
 			}
 		}
 		return list;
 	}
+	
+	private Tile[] cloneTiles(Tile[] tiles) {
+		Tile[] newTiles = new Tile[tiles.length];
+		for(int i = 0; i < tiles.length; i++) {
+			newTiles[i].value = tiles[i].value;
+		}
+		return newTiles;
+	}
 
 	private boolean isFull()
 	{
-		return availableSpace(false, null).size() == 0;
+		return availableSpace(myTiles).size() == 0;
 	}
 
 	boolean canMove()
@@ -180,8 +155,8 @@ public class Game2048 extends JPanel
 		{
 			for (int y = 0; y < 4; y++)
 			{
-				Tile t = tileAt(x, y, false, null);
-				if ((x < 3 && t.value == tileAt(x + 1, y, false, null).value) || ((y < 3) && t.value == tileAt(x, y + 1, false, null).value))
+				Tile t = tileAt(x, y, myTiles);
+				if ((x < 3 && t.value == tileAt(x + 1, y, myTiles).value) || ((y < 3) && t.value == tileAt(x, y + 1, myTiles).value))
 				{
 					return true;
 				}
@@ -231,7 +206,7 @@ public class Game2048 extends JPanel
 			{
 				int newX = (x * cos) - (y * sin) + offsetX;
 				int newY = (x * sin) + (y * cos) + offsetY;
-				newTiles[(newX) + (newY) * 4] = tileAt(x, y, false, null);
+				newTiles[(newX) + (newY) * 4] = tileAt(x, y, myTiles);
 			}
 		}
 		return newTiles;
@@ -299,27 +274,20 @@ public class Game2048 extends JPanel
 		}
 	}
 
-	private Tile[] getLine(int index, boolean whatIf, Tile[] arr)
+	private Tile[] getLine(int index, Tile[] tiles)
 	{
 		Tile[] result = new Tile[4];
 		for (int i = 0; i < 4; i++)
 		{
 
-			result[i] = tileAt(i, index, whatIf, arr);
+			result[i] = tileAt(i, index, tiles);
 		}
 		return result;
 	}
 
-	private void setLine(int index, Tile[] re, boolean whatIf, Tile[] arr)
+	private void setLine(int index, Tile[] newLine, Tile[] tiles)
 	{
-		if (whatIf)
-		{
-			System.arraycopy(re, 0, arr, index * 4, 4);
-		}
-		else
-		{
-			System.arraycopy(re, 0, myTiles, index * 4, 4);
-		}
+		System.arraycopy(newLine, 0, tiles, index * 4, 4);
 	}
 
 	@Override
@@ -390,22 +358,8 @@ public class Game2048 extends JPanel
 
 	public Tile[] whatIfLeft(Tile[] whatIf)
 	{
-
-		boolean needAddTile = false;
-		for (int i = 0; i < 4; i++)
-		{
-			Tile[] line = getLine(i, true, whatIf);
-			Tile[] merged = mergeLine(moveLine(line));
-			setLine(i, merged, true, whatIf);
-			if (!needAddTile && !compare(line, merged))
-			{
-				needAddTile = true;
-			}
-		}
-//		if (needAddTile)
-//		{
-//			addTile(true, whatIf);
-//		}
+		Tile[] clonedTiles = cloneTiles(whatIf);
+		leftUsingTiles(clonedTiles);
 		return whatIf;
 	}
 	
@@ -437,42 +391,4 @@ public class Game2048 extends JPanel
 	{
 		return myTiles;
 	}
-	// addKeyListener(new KeyAdapter()
-	// {
-	// @Override
-	// public void keyPressed(KeyEvent e)
-	// {
-	// if (e.getKeyCode() == KeyEvent.VK_ESCAPE)
-	// {
-	// resetGame();
-	// }
-	// if (!canMove())
-	// {
-	// myLose = true;
-	// }
-	// if (!myWin && !myLose)
-	// {
-	// switch (e.getKeyCode())
-	// {
-	// case KeyEvent.VK_LEFT:
-	// left();
-	// break;
-	// case KeyEvent.VK_RIGHT:
-	// right();
-	// break;
-	// case KeyEvent.VK_DOWN:
-	// down();
-	// break;
-	// case KeyEvent.VK_UP:
-	// up();
-	// break;
-	// }
-	// }
-	// if (!myWin && !canMove())
-	// {
-	// myLose = true;
-	// }
-	// repaint();
-	// }
-	// });
 }
