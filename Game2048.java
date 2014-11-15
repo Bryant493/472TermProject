@@ -139,7 +139,7 @@ public class Game2048 extends JPanel
 		}
 	}
 
-	private List<Tile> availableSpace(boolean whatIf, Tile[] arr)
+	public List<Tile> availableSpace(boolean whatIf, Tile[] arr)
 	{
 		final List<Tile> list = new ArrayList<Tile>(16);
 		if (whatIf)

@@ -1,6 +1,7 @@
 package project;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -36,10 +37,11 @@ public class Agent2048 extends JPanel
 	public void runAI() throws InterruptedException
 	{
 		game.resetGame();
+		game.repaint();
 		Node current = new Node(game.getMyTiles());
-		buildTree(current);
+		buildTree(current, false, 3);
 		int hVal = 0;
-		hVal = expectiMiniMax(current, 10, hVal, true);
+		hVal = expectiMiniMax(current, 5, hVal, true);
 		while(!game.myWin)
 		{
 			for(int i = 0; i < current.getChildren().size(); i++)
@@ -85,6 +87,7 @@ public class Agent2048 extends JPanel
 			game.addTile(false, null);
 			//follow down the tree
 			current = findCurrent(current, new Node(game.getMyTiles()));
+			game.repaint();
 		}
 	}	
 	
@@ -127,9 +130,122 @@ public class Agent2048 extends JPanel
 		return value;
 	}
 	
-	public Node buildTree(Node start)
+	public void buildTree(Node start, boolean max, int depth)
 	{
-		return start;
+		if(depth == 0)
+		{
+			return;
+		}
+		
+		if(!max)
+		{
+			Node left = new Node(game.whatIfLeft(start.getData()));
+			Node right = new Node(game.whatIfRight(start.getData()));
+			Node up = new Node(game.whatIfUp(start.getData()));
+			Node down = new Node(game.whatIfDown(start.getData()));
+			
+			start.getChildren().add(left);
+			start.getChildren().add(right);
+			start.getChildren().add(up);
+			start.getChildren().add(down);
+			
+			buildTree(left, true, depth - 1);
+			buildTree(right, true, depth - 1);
+			buildTree(up, true, depth - 1);
+			buildTree(down, true, depth - 1);
+		}
+		
+		else
+		{
+			Node left = new Node(game.whatIfLeft(start.getData()));
+			Node right = new Node(game.whatIfRight(start.getData()));
+			Node up = new Node(game.whatIfUp(start.getData()));
+			Node down = new Node(game.whatIfDown(start.getData()));
+			
+			for(int i = 0; i < left.getData().length; i++)
+			{
+				if(left.getData()[i].value == 0)
+				{
+					left.getData()[i].value = 2;
+				}
+				start.getChildren().add(new Node(left.getData()));
+				buildTree(left, false, depth - 1);
+				left.getData()[i].value = 0;
+			}
+			for(int i = 0; i < left.getData().length; i++)
+			{
+				if(left.getData()[i].value == 0)
+				{
+					left.getData()[i].value = 4;
+				}
+				start.getChildren().add(new Node(left.getData()));
+				buildTree(left, false, depth - 1);
+				left.getData()[i].value = 0;
+			}
+			
+			for(int i = 0; i < right.getData().length; i++)
+			{
+				if(right.getData()[i].value == 0)
+				{
+					right.getData()[i].value = 2;
+				}
+				start.getChildren().add(new Node(right.getData()));
+				buildTree(right, false, depth - 1);
+				right.getData()[i].value = 0;
+			}
+			for(int i = 0; i < right.getData().length; i++)
+			{
+				if(right.getData()[i].value == 0)
+				{
+					right.getData()[i].value = 4;
+				}
+				start.getChildren().add(new Node(right.getData()));
+				buildTree(right, false, depth - 1);
+				right.getData()[i].value = 0;
+			}
+			
+			for(int i = 0; i < up.getData().length; i++)
+			{
+				if(up.getData()[i].value == 0)
+				{
+					up.getData()[i].value = 2;
+				}
+				start.getChildren().add(new Node(up.getData()));
+				buildTree(up, false, depth - 1);
+				up.getData()[i].value = 0;
+			}
+			for(int i = 0; i < up.getData().length; i++)
+			{
+				if(up.getData()[i].value == 0)
+				{
+					up.getData()[i].value = 4;
+				}
+				start.getChildren().add(new Node(up.getData()));
+				buildTree(up, false, depth - 1);
+				up.getData()[i].value = 0;
+			}
+			
+			for(int i = 0; i < down.getData().length; i++)
+			{
+				if(down.getData()[i].value == 0)
+				{
+					down.getData()[i].value = 2;
+				}
+				start.getChildren().add(new Node(down.getData()));
+				buildTree(down, false, depth - 1);
+				down.getData()[i].value = 0;
+			}
+			for(int i = 0; i < down.getData().length; i++)
+			{
+				if(down.getData()[i].value == 0)
+				{
+					down.getData()[i].value = 4;
+				}
+				start.getChildren().add(new Node(down.getData()));
+				buildTree(down, false, depth - 1);
+				down.getData()[i].value = 0;
+			}
+		}
 	}
 	
 	public static void printTiles(Tile[] tiles)
@@ -158,11 +274,6 @@ public class Agent2048 extends JPanel
 		Game2048 twentyFortyEight = new Game2048();
 		Agent2048 agent = new Agent2048(twentyFortyEight);
 		
-//		printTiles(twentyFortyEight.getMyTiles());
-//		printTiles(twentyFortyEight.whatIfRight(Arrays.copyOf(twentyFortyEight.getMyTiles(), twentyFortyEight.getMyTiles().length)));
-//		printTiles(twentyFortyEight.whatIfLeft(Arrays.copyOf(twentyFortyEight.getMyTiles(), twentyFortyEight.getMyTiles().length)));
-//		printTiles(twentyFortyEight.getMyTiles());
-		
 		JFrame game = new JFrame();
 		game.setTitle("2048 Game");
 		game.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -171,6 +282,7 @@ public class Agent2048 extends JPanel
 		game.setVisible(true);
 		game.add(twentyFortyEight);
 		game.setLocationRelativeTo(null);
+		
 		agent.runAI();
 	}
 }
