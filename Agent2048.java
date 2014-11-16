@@ -36,8 +36,6 @@ public class Agent2048 extends JPanel
 	 */
 	public void runAI() throws InterruptedException
 	{
-		game.resetGame();
-		game.repaint();
 		Node current = new Node(game.getMyTiles());
 		buildTree(current, false, 3);
 		int hVal = 0;
@@ -83,8 +81,9 @@ public class Agent2048 extends JPanel
 					}
 				}
 			}
+			game.repaint();
 			//add random tile
-			game.addTile(game.getMyTiles());
+			//game.addTile(game.getMyTiles());
 			//follow down the tree
 			current = findCurrent(current, new Node(game.getMyTiles()));
 			game.repaint();

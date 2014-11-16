@@ -64,30 +64,35 @@ public class Game2048 extends JPanel
 	public void left()
 	{
 		boolean shifted = leftUsingTiles(myTiles);
-		if(shifted) {
+		if (shifted)
+		{
 			addTile(myTiles);
 		}
 	}
-	
-	public void right() {
+
+	public void right()
+	{
 		myTiles = rotate(180);
 		left();
 		myTiles = rotate(180);
 	}
-	
-	public void up() {
+
+	public void up()
+	{
 		myTiles = rotate(270);
 		left();
 		myTiles = rotate(90);
 	}
-	
-	public void down() {
+
+	public void down()
+	{
 		myTiles = rotate(90);
 		left();
 		myTiles = rotate(270);
 	}
 
-	private boolean leftUsingTiles(Tile[] tiles) {
+	private boolean leftUsingTiles(Tile[] tiles)
+	{
 		boolean needAddTile = false;
 		for (int i = 0; i < 4; i++)
 		{
@@ -131,11 +136,14 @@ public class Game2048 extends JPanel
 		}
 		return list;
 	}
-	
-	private Tile[] cloneTiles(Tile[] tiles) {
+
+	private Tile[] cloneTiles(Tile[] tiles)
+	{
 		Tile[] newTiles = new Tile[tiles.length];
-		for(int i = 0; i < tiles.length; i++) {
-			newTiles[i].value = tiles[i].value;
+		for (int i = 0; i < tiles.length; i++)
+		{
+			Tile t = new Tile(tiles[i].value);
+			newTiles[i] = t;
 		}
 		return newTiles;
 	}
@@ -189,7 +197,7 @@ public class Game2048 extends JPanel
 	{
 		return rotateUsingTiles(angle, myTiles);
 	}
-	
+
 	private Tile[] rotateUsingTiles(int angle, Tile[] tiles)
 	{
 		Tile[] newTiles = new Tile[4 * 4];
@@ -367,7 +375,7 @@ public class Game2048 extends JPanel
 		leftUsingTiles(clonedTiles);
 		return clonedTiles;
 	}
-	
+
 	public Tile[] whatIfRight(Tile[] whatIf)
 	{
 		Tile[] clonedTiles = cloneTiles(whatIf);
@@ -385,7 +393,7 @@ public class Game2048 extends JPanel
 		whatIf = rotateUsingTiles(90, clonedTiles);
 		return clonedTiles;
 	}
-	
+
 	public Tile[] whatIfDown(Tile[] whatIf)
 	{
 		Tile[] clonedTiles = cloneTiles(whatIf);

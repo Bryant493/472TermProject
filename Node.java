@@ -58,6 +58,13 @@ public class Node
 	
 	public boolean equals(Node other)
 	{
-		return Arrays.equals(this.getData(), other.getData());
+		for(int i = 0; i < this.getData().length; i++)
+		{
+			if(!(this.getData()[i].equals(other.getData()[i])))
+			{
+				return false;
+			}
+		}
+		return true;
 	}
 }
