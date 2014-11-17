@@ -219,7 +219,7 @@ public class Game2048 extends JPanel
 			{
 				int newX = (x * cos) - (y * sin) + offsetX;
 				int newY = (x * sin) + (y * cos) + offsetY;
-				newTiles[(newX) + (newY) * 4] = tileAt(x, y, myTiles);
+				newTiles[(newX) + (newY) * 4] = tileAt(x, y, tiles);
 			}
 		}
 		return newTiles;
