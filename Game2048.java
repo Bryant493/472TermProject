@@ -137,7 +137,7 @@ public class Game2048 extends JPanel
 		return list;
 	}
 
-	private Tile[] cloneTiles(Tile[] tiles)
+	public Tile[] cloneTiles(Tile[] tiles)
 	{
 		Tile[] newTiles = new Tile[tiles.length];
 		for (int i = 0; i < tiles.length; i++)
@@ -379,27 +379,27 @@ public class Game2048 extends JPanel
 	public Tile[] whatIfRight(Tile[] whatIf)
 	{
 		Tile[] clonedTiles = cloneTiles(whatIf);
-		whatIf = rotateUsingTiles(180, clonedTiles);
+		clonedTiles = rotateUsingTiles(180, clonedTiles);
 		leftUsingTiles(clonedTiles);
-		whatIf = rotateUsingTiles(180, clonedTiles);
+		clonedTiles = rotateUsingTiles(180, clonedTiles);
 		return clonedTiles;
 	}
 
 	public Tile[] whatIfUp(Tile[] whatIf)
 	{
 		Tile[] clonedTiles = cloneTiles(whatIf);
-		whatIf = rotateUsingTiles(270, clonedTiles);
+		clonedTiles = rotateUsingTiles(270, clonedTiles);
 		leftUsingTiles(clonedTiles);
-		whatIf = rotateUsingTiles(90, clonedTiles);
+		clonedTiles = rotateUsingTiles(90, clonedTiles);
 		return clonedTiles;
 	}
 
 	public Tile[] whatIfDown(Tile[] whatIf)
 	{
 		Tile[] clonedTiles = cloneTiles(whatIf);
-		whatIf = rotateUsingTiles(90, clonedTiles);
+		clonedTiles = rotateUsingTiles(90, clonedTiles);
 		leftUsingTiles(clonedTiles);
-		whatIf = rotateUsingTiles(270, clonedTiles);
+		clonedTiles = rotateUsingTiles(270, clonedTiles);
 		return clonedTiles;
 	}
 

@@ -39,7 +39,7 @@ public class Agent2048 extends JPanel
 		Node current = new Node(game.getMyTiles());
 		buildTree(current, false, 3);
 		int hVal = 0;
-		hVal = expectiMiniMax(current, 5, hVal, true);
+		hVal = expectiMiniMax(current, 3, hVal, true);
 		while(!game.myWin)
 		{
 			for(int i = 0; i < current.getChildren().size(); i++)
@@ -56,7 +56,7 @@ public class Agent2048 extends JPanel
 						break;
 					}
 					//right
-					else if(i == 2)
+					else if(i == 1)
 					{
 						game.right();
 						//move to this node in tree
@@ -64,7 +64,7 @@ public class Agent2048 extends JPanel
 						break;
 					}
 					//up
-					else if(i == 3)
+					else if(i == 2)
 					{
 						game.up();
 						//move to this node in tree
@@ -72,7 +72,7 @@ public class Agent2048 extends JPanel
 						break;
 					}
 					//down
-					else if(i == 4)
+					else if(i == 3)
 					{
 						game.down();
 						//move to this node in tree
@@ -156,93 +156,27 @@ public class Agent2048 extends JPanel
 		
 		else
 		{
-			Node left = new Node(game.whatIfLeft(start.getData()));
-			Node right = new Node(game.whatIfRight(start.getData()));
-			Node up = new Node(game.whatIfUp(start.getData()));
-			Node down = new Node(game.whatIfDown(start.getData()));
+			Node possible = new Node(game.cloneTiles(start.getData()));
 			
-			for(int i = 0; i < left.getData().length; i++)
+			for(int i = 0; i < possible.getData().length; i++)
 			{
-				if(left.getData()[i].value == 0)
+				if(possible.getData()[i].value == 0)
 				{
-					left.getData()[i].value = 2;
+					possible.getData()[i].value = 2;
 				}
-				start.getChildren().add(new Node(left.getData()));
-				buildTree(left, false, depth - 1);
-				left.getData()[i].value = 0;
+				start.getChildren().add(new Node(possible.getData()));
+				buildTree(possible, false, depth - 1);
+				possible.getData()[i].value = 0;
 			}
-			for(int i = 0; i < left.getData().length; i++)
+			for(int i = 0; i < possible.getData().length; i++)
 			{
-				if(left.getData()[i].value == 0)
+				if(possible.getData()[i].value == 0)
 				{
-					left.getData()[i].value = 4;
+					possible.getData()[i].value = 4;
 				}
-				start.getChildren().add(new Node(left.getData()));
-				buildTree(left, false, depth - 1);
-				left.getData()[i].value = 0;
-			}
-			
-			for(int i = 0; i < right.getData().length; i++)
-			{
-				if(right.getData()[i].value == 0)
-				{
-					right.getData()[i].value = 2;
-				}
-				start.getChildren().add(new Node(right.getData()));
-				buildTree(right, false, depth - 1);
-				right.getData()[i].value = 0;
-			}
-			for(int i = 0; i < right.getData().length; i++)
-			{
-				if(right.getData()[i].value == 0)
-				{
-					right.getData()[i].value = 4;
-				}
-				start.getChildren().add(new Node(right.getData()));
-				buildTree(right, false, depth - 1);
-				right.getData()[i].value = 0;
-			}
-			
-			for(int i = 0; i < up.getData().length; i++)
-			{
-				if(up.getData()[i].value == 0)
-				{
-					up.getData()[i].value = 2;
-				}
-				start.getChildren().add(new Node(up.getData()));
-				buildTree(up, false, depth - 1);
-				up.getData()[i].value = 0;
-			}
-			for(int i = 0; i < up.getData().length; i++)
-			{
-				if(up.getData()[i].value == 0)
-				{
-					up.getData()[i].value = 4;
-				}
-				start.getChildren().add(new Node(up.getData()));
-				buildTree(up, false, depth - 1);
-				up.getData()[i].value = 0;
-			}
-			
-			for(int i = 0; i < down.getData().length; i++)
-			{
-				if(down.getData()[i].value == 0)
-				{
-					down.getData()[i].value = 2;
-				}
-				start.getChildren().add(new Node(down.getData()));
-				buildTree(down, false, depth - 1);
-				down.getData()[i].value = 0;
-			}
-			for(int i = 0; i < down.getData().length; i++)
-			{
-				if(down.getData()[i].value == 0)
-				{
-					down.getData()[i].value = 4;
-				}
-				start.getChildren().add(new Node(down.getData()));
-				buildTree(down, false, depth - 1);
-				down.getData()[i].value = 0;
+				start.getChildren().add(new Node(possible.getData()));
+				buildTree(possible, false, depth - 1);
+				possible.getData()[i].value = 0;
 			}
 		}
 	}
