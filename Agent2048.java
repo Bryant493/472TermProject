@@ -39,9 +39,9 @@ public class Agent2048 extends JPanel
 		Node current = new Node(game.getMyTiles());
 		buildTree(current, false, 3);
 		int hVal = 0;
-		hVal = expectiMiniMax(current, 3, hVal, true);
 		while(!game.myWin)
 		{
+			hVal = expectiMiniMax(current, 3, hVal, true);
 			for(int i = 0; i < current.getChildren().size(); i++)
 			{
 				//find the child with the calculated expectiMiniMaxValue
@@ -162,21 +162,22 @@ public class Agent2048 extends JPanel
 			{
 				if(possible.getData()[i].value == 0)
 				{
+					
 					possible.getData()[i].value = 2;
+					start.getChildren().add(new Node(game.cloneTiles(possible.getData())));
+					buildTree(new Node(game.cloneTiles(possible.getData())), false, depth - 1);
+					possible.getData()[i].value = 0;
 				}
-				start.getChildren().add(new Node(possible.getData()));
-				buildTree(possible, false, depth - 1);
-				possible.getData()[i].value = 0;
 			}
 			for(int i = 0; i < possible.getData().length; i++)
 			{
 				if(possible.getData()[i].value == 0)
 				{
 					possible.getData()[i].value = 4;
+					start.getChildren().add(new Node(game.cloneTiles(possible.getData())));
+					buildTree(new Node(game.cloneTiles(possible.getData())), false, depth - 1);
+					possible.getData()[i].value = 0;
 				}
-				start.getChildren().add(new Node(possible.getData()));
-				buildTree(possible, false, depth - 1);
-				possible.getData()[i].value = 0;
 			}
 		}
 	}
