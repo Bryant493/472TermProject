@@ -313,7 +313,7 @@ public class Game2048 extends JPanel
 		{
 			for (int x = 0; x < 4; x++)
 			{
-				drawTile(g, myTiles[x + y * 4], x, y);
+				drawTile(g,myTiles[x + y * 4], x, y);
 			}
 		}
 	}

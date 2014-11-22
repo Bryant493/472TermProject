@@ -20,6 +20,12 @@ class Tile
 	{
 		return value == 0;
 	}
+	
+	@Override
+	public String toString()
+	{
+		return value + "";
+	}
 
 	public Color getForeground()
 	{

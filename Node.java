@@ -20,6 +20,21 @@ public class Node
 	{
 		this.parent = parent;
 	}
+	
+	@Override
+	public String toString()
+	{
+		String ret = "";
+		for(int i = 0; i < 16; i++)
+		{
+			ret += data[i] + ", ";
+			if(i == 3 || i == 7 || i == 11 || i == 15)
+			{
+				ret = ret.substring(0, ret.length() - 2) + "\n";
+			}
+		}
+		return ret;
+	}
 
 	public ArrayList<Node> getChildren()
 	{
