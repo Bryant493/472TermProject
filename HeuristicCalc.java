@@ -1,7 +1,5 @@
 package project;
 
-import java.util.Arrays;
-
 public class HeuristicCalc {
 
 	static boolean horizontal;
@@ -16,9 +14,8 @@ public class HeuristicCalc {
 		score += edgeScore(tiles);
 		score += openBlocksScore(tiles);
 		score += monotonicScore(tiles);
-		
-		System.out.println("Highest edge row = " + Arrays.toString(highestEdge) + " orderliness = " + score);
-		return 0;
+
+		return score;
 	}
 	
 	private static int monotonicScore(Tile[] tiles) {
