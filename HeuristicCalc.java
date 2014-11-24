@@ -14,10 +14,26 @@ public class HeuristicCalc {
 		score += edgeScore(tiles);
 		score += openBlocksScore(tiles);
 		score += monotonicScore(tiles);
+		score += highestBlockScore(tiles);
 
 		return score;
 	}
 	
+	private static int highestBlockScore(Tile[] tiles) {
+		int max = 0;
+		for (int i = 0; i < 16; i++)
+		{
+			if(tiles[i].value > max) {
+				max = tiles[i].value;
+			}
+		}
+
+		// treat 65536 block (2^16) as the highest possible block
+		int percent = (int) (max / 65536 * 100);
+
+		return Math.max(100, percent);
+	}
+
 	private static int monotonicScore(Tile[] tiles) {
 		int numMonotonic = 0;
 		for (int i = 0; i < 4; i++)
@@ -33,7 +49,9 @@ public class HeuristicCalc {
 				numMonotonic++;
 			}
 		}
-		return numMonotonic;
+		
+		// maximum numMonotonic is 8 (rows + columns)
+		return (int) ((double)numMonotonic / 8 * 100);
 	}
 
 	private static Tile[] getRow(int rowNum, Tile[] tiles) {
@@ -76,7 +94,9 @@ public class HeuristicCalc {
 				numOpenBlocks++;
 			}
 		}
-		return numOpenBlocks;
+		
+		// total numOpenBlocks is 16
+		return (int) ((double)numOpenBlocks / 16 * 100);
 	}
 
 	private static int edgeScore(Tile[] tiles) {
@@ -111,7 +131,7 @@ public class HeuristicCalc {
 			}
 		}
 		
-		return score;
+		return (int) ((double)score / 3 * 100);
 	}
 
 	private static int[] getHighestEdgeRow(Tile[] tiles) {
