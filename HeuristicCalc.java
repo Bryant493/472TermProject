@@ -1,8 +1,7 @@
 package project;
 
-import java.util.Arrays;
-
-public class HeuristicCalc {
+public class HeuristicCalc
+{
 
 	static boolean horizontal;
 	static final int LEFT = 0;
@@ -10,18 +9,38 @@ public class HeuristicCalc {
 	static final int UP = 2;
 	static final int DOWN = 3;
 	
-	public static int getHeuristic(Tile[] tiles) {
+	public static int getHeuristic(Tile[] tiles)
+	{
 		int[] highestEdge = getHighestEdgeRow(tiles);
 		int score = orderlinessScore(highestEdge);
 		score += edgeScore(tiles);
 		score += openBlocksScore(tiles);
 		score += monotonicScore(tiles);
 		
-		System.out.println("Highest edge row = " + Arrays.toString(highestEdge) + " orderliness = " + score);
+		score += highestBlockScore(tiles);
+
 		return score;
 	}
 	
-	private static int monotonicScore(Tile[] tiles) {
+	private static int highestBlockScore(Tile[] tiles)
+	{
+		int max = 0;
+		for (int i = 0; i < 16; i++)
+		{
+			if (tiles[i].value > max)
+			{
+				max = tiles[i].value;
+			}
+		}
+
+		// treat 65536 block (2^16) as the highest possible block
+		int percent = (int) ((double) max / 65536 * 100);
+
+		return Math.max(100, percent);
+	}
+
+	private static int monotonicScore(Tile[] tiles)
+	{
 		int numMonotonic = 0;
 		for (int i = 0; i < 4; i++)
 		{
@@ -36,10 +55,13 @@ public class HeuristicCalc {
 				numMonotonic++;
 			}
 		}
-		return numMonotonic;
+		
+		// maximum numMonotonic is 8 (rows + columns)
+		return (int) ((double) numMonotonic / 8 * 100);
 	}
 
-	private static Tile[] getRow(int rowNum, Tile[] tiles) {
+	private static Tile[] getRow(int rowNum, Tile[] tiles)
+	{
 		Tile[] row = new Tile[4];
 		for (int x = 0; x < 4; x++)
 		{
@@ -48,7 +70,8 @@ public class HeuristicCalc {
 		return row;
 	}
 
-	private static Tile[] getCol(int colNum, Tile[] tiles) {
+	private static Tile[] getCol(int colNum, Tile[] tiles)
+	{
 		Tile[] col = new Tile[4];
 		for (int y = 0; y < 4; y++)
 		{
@@ -57,7 +80,8 @@ public class HeuristicCalc {
 		return col;
 	}
 
-	private static boolean isMonotonic(Tile[] line) {
+	private static boolean isMonotonic(Tile[] line)
+	{
 		for (int i = 1; i < 3; i++)
 		{
 			boolean increasingBefore = line[i - 1].value < line[i].value;
@@ -70,7 +94,8 @@ public class HeuristicCalc {
 		return true;
 	}
 
-	private static int openBlocksScore(Tile[] tiles) {
+	private static int openBlocksScore(Tile[] tiles)
+	{
 		int numOpenBlocks = 0;
 		for (int i = 0; i < 16; i++)
 		{
@@ -79,10 +104,13 @@ public class HeuristicCalc {
 				numOpenBlocks++;
 			}
 		}
-		return numOpenBlocks;
+		
+		// total numOpenBlocks is 16
+		return (int) ((double) numOpenBlocks / 16 * 100);
 	}
 
-	private static int edgeScore(Tile[] tiles) {
+	private static int edgeScore(Tile[] tiles)
+	{
 		int outerSquareSum = 0;
 		int allSquareSum = 0;
 		for (int y = 0; y < 4; y++)
@@ -100,7 +128,8 @@ public class HeuristicCalc {
 		return (int) (((double) allSquareSum / outerSquareSum) * 100);
 	}
 
-	private static int orderlinessScore(int[] highestEdge) {
+	private static int orderlinessScore(int[] highestEdge)
+	{
 		int score = 0;
 		
 		for (int i = 1; i < 3; i++)
@@ -114,14 +143,16 @@ public class HeuristicCalc {
 			}
 		}
 		
-		return score;
+		return (int) ((double) score / 3 * 100);
 	}
 
-	private static int[] getHighestEdgeRow(Tile[] tiles) {
+	private static int[] getHighestEdgeRow(Tile[] tiles)
+	{
 		int[] sums = new int[4];
 		int[][] edges = new int[4][4];
 		
-		for (int i = 0; i < 4; i++) {
+		for (int i = 0; i < 4; i++)
+		{
 			// Tile (x, y) is located at tiles[x + y * 4]
 			edges[LEFT][i] = tiles[0 + i * 4].value;
 			edges[RIGHT][i] = tiles[3 + i * 4].value;
