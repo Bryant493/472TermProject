@@ -18,7 +18,7 @@ public class HeuristicCalc {
 		score += monotonicScore(tiles);
 		
 		System.out.println("Highest edge row = " + Arrays.toString(highestEdge) + " orderliness = " + score);
-		return 0;
+		return score;
 	}
 	
 	private static int monotonicScore(Tile[] tiles) {

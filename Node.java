@@ -14,6 +14,7 @@ public class Node
     {
 		this.data = data;
        	children = new ArrayList<Node>();
+       	hVal = HeuristicCalc.getHeuristic(data);
     }
 
 	public void setParent(Node parent)

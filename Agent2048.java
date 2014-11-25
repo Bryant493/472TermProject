@@ -1,7 +1,6 @@
 package project;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Random;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -53,32 +52,48 @@ public class Agent2048 extends JPanel
 					{
 						game.left();
 						// move to this node in tree
-						current = current.getChildren().get(i);
-						break;
+						Node temp = current.getChildren().get(i);
+						if(!temp.equals(current))
+						{
+							current = current.getChildren().get(i);
+							break;
+						}
 					}
 					// right
 					else if (i == 1)
 					{
 						game.right();
 						// move to this node in tree
-						current = current.getChildren().get(i);
-						break;
+						Node temp = current.getChildren().get(i);
+						if(!temp.equals(current))
+						{
+							current = current.getChildren().get(i);
+							break;
+						}
 					}
 					// up
 					else if (i == 2)
 					{
 						game.up();
 						// move to this node in tree
-						current = current.getChildren().get(i);
-						break;
+						Node temp = current.getChildren().get(i);
+						if(!temp.equals(current))
+						{
+							current = current.getChildren().get(i);
+							break;
+						}
 					}
 					// down
 					else if (i == 3)
 					{
 						game.down();
 						// move to this node in tree
-						current = current.getChildren().get(i);
-						break;
+						Node temp = current.getChildren().get(i);
+						if(!temp.equals(current))
+						{
+							current = current.getChildren().get(i);
+							break;
+						}
 					}
 				}
 			}
@@ -152,14 +167,17 @@ public class Agent2048 extends JPanel
 			Node down = new Node(game.whatIfDown(start.getData()));
 
 			start.getChildren().add(left);
-			start.getChildren().add(right);
-			start.getChildren().add(up);
-			start.getChildren().add(down);
-
 			buildTree(left, true, depth - 1);
+
+			start.getChildren().add(right);
 			buildTree(right, true, depth - 1);
+
+			start.getChildren().add(up);
 			buildTree(up, true, depth - 1);
+
+			start.getChildren().add(down);
 			buildTree(down, true, depth - 1);
+
 		}
 
 		else
