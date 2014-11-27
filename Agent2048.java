@@ -1,14 +1,16 @@
 package project;
 
-import java.util.Random;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
 /**
- * AI Agent that controls a 2048 game with an expectimax algorithm in order to
- * win every time!
+ * AI Agent that controls a 2048 game with an 
+ * expectimax algorithm in order to win every time!
  * 
  * @author Bryant
  */
@@ -29,198 +31,203 @@ public class Agent2048 extends JPanel
 	}
 
 	/**
-	 * Runs the AI Agent by selecting moves and performing them by generating a
-	 * game tree and calculating the hValues based on an expectimax algorithm
-	 * 
+	 * Runs the AI Agent by selecting moves and performing them by generating a game tree and 
+	 * calculating the hValues based on an expectimax algorithm
 	 * @throws InterruptedException
 	 */
-	public void runAI() throws InterruptedException
+	public void runAI(int depth) throws InterruptedException
 	{
 		Node current = new Node(game.getMyTiles());
 		int hVal = 0;
-		while (!game.myWin)
+		buildTree(current, false, depth, false);
+		while(true)
 		{
-			buildTree(current, false, 3);
-			hVal = expectiMiniMax(current, 3, hVal, true);
-			for (int i = 0; i < current.getChildren().size(); i++)
+			hVal = expectiMiniMax(current, depth, true);
+			for(int i = 0; i < current.getChildren().size(); i++)
 			{
-				// find the child with the calculated expectiMiniMaxValue
-				if (current.getChildren().get(i).getHVal() == hVal)
+				//find the child with the calculated expectiMiniMaxValue
+				if(current.getChildren().get(i).getHVal() == hVal)
 				{
 					// left
-					if (i == 0)
+					if(i == 0)
 					{
 						game.left();
-						// move to this node in tree
-						Node temp = current.getChildren().get(i);
-						if(!temp.equals(current))
-						{
-							current = current.getChildren().get(i);
-							break;
-						}
+						//move to this node in tree
+						current = current.getChildren().get(i);
+						break;
 					}
-					// right
-					else if (i == 1)
+					//right
+					else if(i == 1)
 					{
 						game.right();
-						// move to this node in tree
-						Node temp = current.getChildren().get(i);
-						if(!temp.equals(current))
-						{
-							current = current.getChildren().get(i);
-							break;
-						}
+						//move to this node in tree
+						current = current.getChildren().get(i);
+						break;
 					}
-					// up
-					else if (i == 2)
+					//up
+					else if(i == 2)
 					{
 						game.up();
-						// move to this node in tree
-						Node temp = current.getChildren().get(i);
-						if(!temp.equals(current))
-						{
-							current = current.getChildren().get(i);
-							break;
-						}
+						//move to this node in tree
+						current = current.getChildren().get(i);
+						break;
 					}
-					// down
-					else if (i == 3)
+					//down
+					else if(i == 3)
 					{
 						game.down();
-						// move to this node in tree
-						Node temp = current.getChildren().get(i);
-						if(!temp.equals(current))
-						{
-							current = current.getChildren().get(i);
-							break;
-						}
+						//move to this node in tree
+						current = current.getChildren().get(i);
+						break;
 					}
 				}
 			}
 			game.repaint();
-			// add random tile
-			// game.addTile(game.getMyTiles());
-			// follow down the tree
+			//follow down the tree
 			current = findCurrent(current, new Node(game.getMyTiles()));
 			game.repaint();
+			if(game.myWin)
+			{
+				break;
+			}
+			buildTree(current, false, depth, true);
 		}
-	}
-
+	}	
+	
 	/**
-	 * Find the next node to choose with the best hVal using a recursive
-	 * expectimax algorithm
-	 * 
-	 * @param node
-	 *            - start node
-	 * @param depth
-	 *            - how far down the tree this algorithm should go
-	 * @param value
-	 *            - the hVal of the node
-	 * @param max
-	 *            - which level of the tree we are currently on (i.e Max or
-	 *            Expect)
+	 * Find the next node to choose with the best hVal using a recursive expectimax algorithm
+	 * @param node - start node
+	 * @param depth - how far down the tree this algorithm should go
+	 * @param value - the hVal of the node
+	 * @param max - which level of the tree we are currently on (i.e Max or Expect)
 	 * @return value
 	 */
-	public int expectiMiniMax(Node node, int depth, int value, boolean max)
-	{
-		if (depth == 0 || node.getChildren().size() == 0)
+	public int expectiMiniMax(Node node, int depth, boolean max)
+	{	
+		int value;
+		double prob=0; 	//probability that the child tile is added 
+		if(depth == 0 || node.getChildren().size() == 0)
 		{
-			return node.getHVal();
+			value=node.getHVal();
 		}
-
-		else if (max == false)
+		
+		else if(!max)
 		{
 			value = 0;
-			// Expect next node
-			for (Node child : node.getChildren())
+			//Expect next node
+			for(Node child : node.getChildren())
 			{
-				// not sure if correct
-				value += node.getHVal() * expectiMiniMax(child, depth - 1, value, true);
+				value += prob * expectiMiniMax(child, depth - 1, true);
 			}
 		}
-
-		else if (max == true)
+		
+		else
 		{
-			value = Integer.MAX_VALUE;
-			// Max of next node
-			for (Node child : node.getChildren())
+			value = 0;
+			//Max of next node
+			for(Node child : node.getChildren())
 			{
-				// not sure if correct
-				value = node.getHVal() > expectiMiniMax(child, depth - 1, value, false) ? node.getHVal() : child.getHVal();
+				value= Math.max(value, expectiMiniMax(child, depth-1, max));
 			}
 		}
 		return value;
 	}
-
-	public void buildTree(Node start, boolean max, int depth)
+	
+	public void buildTree(Node start, boolean max, int depth, boolean adding)
 	{
-		if (depth == 0)
+		if(depth == 0)
 		{
 			return;
 		}
-
-		if (!max)
+		
+		if(max)
 		{
-			Node left = new Node(game.whatIfLeft(start.getData()));
-			Node right = new Node(game.whatIfRight(start.getData()));
-			Node up = new Node(game.whatIfUp(start.getData()));
-			Node down = new Node(game.whatIfDown(start.getData()));
-
-			start.getChildren().add(left);
-			buildTree(left, true, depth - 1);
-
-			start.getChildren().add(right);
-			buildTree(right, true, depth - 1);
-
-			start.getChildren().add(up);
-			buildTree(up, true, depth - 1);
-
-			start.getChildren().add(down);
-			buildTree(down, true, depth - 1);
-
+			if(!adding || depth<=2)
+			{
+				Node left = new Node(game.whatIfLeft(start.getData()));
+				if(!left.equals(start))
+				{
+					start.getChildren().add(left);
+				}
+				Node right = new Node(game.whatIfRight(start.getData()));
+				if(!right.equals(start))
+				{
+					start.getChildren().add(right);
+				}
+				Node up = new Node(game.whatIfUp(start.getData()));
+				if(!up.equals(start))
+				{
+					start.getChildren().add(up);
+				}
+				Node down = new Node(game.whatIfDown(start.getData()));
+				if(!down.equals(start))
+				{
+					start.getChildren().add(down);
+				}
+			}
+			
+			for(int i = 0; i < start.getChildren().size(); i++)
+			{
+				//for each, check if we have won the game, if we haven't then continue building
+				if(weWon(start.getChildren().get(i)))
+				{
+					buildTree(start.getChildren().get(i), true, depth - 1, adding);
+				}
+			}
 		}
-
+		
 		else
 		{
 			Node possible = new Node(game.cloneTiles(start.getData()));
-
-			for (int i = 0; i < possible.getData().length; i++)
+			
+			for(int i = 0; i < possible.getData().length; i++)
 			{
-				if (possible.getData()[i].value == 0)
+				if(possible.getData()[i].value == 0)
 				{
+					
 					possible.getData()[i].value = 2;
 					start.getChildren().add(new Node(game.cloneTiles(possible.getData())));
-					buildTree(new Node(game.cloneTiles(possible.getData())), false, depth - 1);
-					possible.getData()[i].value = 0;
-				}
-			}
-			for (int i = 0; i < possible.getData().length; i++)
-			{
-				if (possible.getData()[i].value == 0)
-				{
+					if(weLost(start.getChildren().get(i)))
+					{
+						buildTree(new Node(game.cloneTiles(possible.getData())), false, depth - 1, adding);
+					}	
 					possible.getData()[i].value = 4;
 					start.getChildren().add(new Node(game.cloneTiles(possible.getData())));
-					buildTree(new Node(game.cloneTiles(possible.getData())), false, depth - 1);
+					if(weLost(start.getChildren().get(i)))
+					{
+						buildTree(new Node(game.cloneTiles(possible.getData())), false, depth - 1, adding);
+					}	
 					possible.getData()[i].value = 0;
 				}
 			}
+			
 		}
+	}
+	
+	private boolean weLost(Node node) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	private boolean weWon(Node node) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 	public static void printTiles(Tile[] tiles)
 	{
-		for (Tile t : tiles)
+		for(Tile t : tiles)
 		{
 			System.out.print(t.value);
 		}
 		System.out.println("\n");
 	}
-
+	
 	private Node findCurrent(Node current, Node next)
 	{
-		for (Node t : current.getChildren())
+		for(Node t : current.getChildren())
 		{
-			if (t.equals(next))
+			if(t.equals(next))
 			{
 				return t;
 			}
@@ -232,7 +239,7 @@ public class Agent2048 extends JPanel
 	{
 		Game2048 twentyFortyEight = new Game2048();
 		Agent2048 agent = new Agent2048(twentyFortyEight);
-
+		
 		JFrame game = new JFrame();
 		game.setTitle("2048 Game");
 		game.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -241,7 +248,8 @@ public class Agent2048 extends JPanel
 		game.setVisible(true);
 		game.add(twentyFortyEight);
 		game.setLocationRelativeTo(null);
-
-		agent.runAI();
+		
+		agent.runAI(3);
 	}
 }
+

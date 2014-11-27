@@ -6,7 +6,6 @@ import java.util.Arrays;
 public class Node
 {
 	private Tile[] data;
-	private Node parent;
 	private ArrayList<Node> children;
 	private int hVal;
 
@@ -17,11 +16,6 @@ public class Node
        	hVal = HeuristicCalc.getHeuristic(data);
     }
 
-	public void setParent(Node parent)
-	{
-		this.parent = parent;
-	}
-	
 	@Override
 	public String toString()
 	{
@@ -40,11 +34,6 @@ public class Node
 	public ArrayList<Node> getChildren()
 	{
 		return children;
-	}
-
-	public Node getParent()
-	{
-		return parent;
 	}
 
 	public void addChild(Node node)
