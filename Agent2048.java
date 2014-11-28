@@ -39,7 +39,7 @@ public class Agent2048 extends JPanel
 	{
 		Node current = new Node(game.getMyTiles());
 		int hVal = 0;
-		buildTree(current, false, depth, false);
+		buildTree(current, true, depth);
 		while(true)
 		{
 			hVal = expectiMiniMax(current, depth, true);
@@ -83,14 +83,16 @@ public class Agent2048 extends JPanel
 				}
 			}
 			game.repaint();
+			game.addTile(game.getMyTiles());
 			//follow down the tree
-			current = findCurrent(current, new Node(game.getMyTiles()));
+			//current = findCurrent(current, new Node(game.getMyTiles()));
+			current = new Node(game.getMyTiles());
 			game.repaint();
 			if(game.myWin)
 			{
 				break;
 			}
-			buildTree(current, false, depth, true);
+			buildTree(current, true, depth);
 		}
 	}	
 	
@@ -119,6 +121,7 @@ public class Agent2048 extends JPanel
 			{
 				value += prob * expectiMiniMax(child, depth - 1, true);
 			}
+			node.setHVal(value);
 		}
 		
 		else
@@ -129,11 +132,12 @@ public class Agent2048 extends JPanel
 			{
 				value= Math.max(value, expectiMiniMax(child, depth-1, max));
 			}
+			node.setHVal(value);
 		}
 		return value;
 	}
 	
-	public void buildTree(Node start, boolean max, int depth, boolean adding)
+	public void buildTree(Node start, boolean max, int depth)
 	{
 		if(depth == 0)
 		{
@@ -142,36 +146,33 @@ public class Agent2048 extends JPanel
 		
 		if(max)
 		{
-			if(!adding || depth<=2)
+			Node left = new Node(game.whatIfLeft(start.getData()));
+			if(!left.equals(start))
 			{
-				Node left = new Node(game.whatIfLeft(start.getData()));
-				if(!left.equals(start))
-				{
-					start.getChildren().add(left);
-				}
-				Node right = new Node(game.whatIfRight(start.getData()));
-				if(!right.equals(start))
-				{
-					start.getChildren().add(right);
-				}
-				Node up = new Node(game.whatIfUp(start.getData()));
-				if(!up.equals(start))
-				{
-					start.getChildren().add(up);
-				}
-				Node down = new Node(game.whatIfDown(start.getData()));
-				if(!down.equals(start))
-				{
-					start.getChildren().add(down);
-				}
+				start.getChildren().add(left);
+			}
+			Node right = new Node(game.whatIfRight(start.getData()));
+			if(!right.equals(start))
+			{
+				start.getChildren().add(right);
+			}
+			Node up = new Node(game.whatIfUp(start.getData()));
+			if(!up.equals(start))
+			{
+				start.getChildren().add(up);
+			}
+			Node down = new Node(game.whatIfDown(start.getData()));
+			if(!down.equals(start))
+			{
+				start.getChildren().add(down);
 			}
 			
 			for(int i = 0; i < start.getChildren().size(); i++)
 			{
 				//for each, check if we have won the game, if we haven't then continue building
-				if(weWon(start.getChildren().get(i)))
+				if(!weWon(start.getChildren().get(i)))
 				{
-					buildTree(start.getChildren().get(i), true, depth - 1, adding);
+					buildTree(start.getChildren().get(i), false, depth - 1);
 				}
 			}
 		}
@@ -186,16 +187,18 @@ public class Agent2048 extends JPanel
 				{
 					
 					possible.getData()[i].value = 2;
-					start.getChildren().add(new Node(game.cloneTiles(possible.getData())));
-					if(weLost(start.getChildren().get(i)))
+					Node nodeWithAdded2 = new Node(game.cloneTiles(possible.getData()));
+					start.getChildren().add(nodeWithAdded2);
+					if(!weLost(nodeWithAdded2))
 					{
-						buildTree(new Node(game.cloneTiles(possible.getData())), false, depth - 1, adding);
+						buildTree(new Node(game.cloneTiles(possible.getData())), true, depth - 1);
 					}	
 					possible.getData()[i].value = 4;
-					start.getChildren().add(new Node(game.cloneTiles(possible.getData())));
-					if(weLost(start.getChildren().get(i)))
+					Node nodeWithAdded4 = new Node(game.cloneTiles(possible.getData()));
+					start.getChildren().add(nodeWithAdded4);
+					if(!weLost(nodeWithAdded4))
 					{
-						buildTree(new Node(game.cloneTiles(possible.getData())), false, depth - 1, adding);
+						buildTree(new Node(game.cloneTiles(possible.getData())), true, depth - 1);
 					}	
 					possible.getData()[i].value = 0;
 				}
@@ -249,7 +252,7 @@ public class Agent2048 extends JPanel
 		game.add(twentyFortyEight);
 		game.setLocationRelativeTo(null);
 		
-		agent.runAI(3);
+		agent.runAI(6);
 	}
 }
 
