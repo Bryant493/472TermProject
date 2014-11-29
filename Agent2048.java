@@ -130,7 +130,7 @@ public class Agent2048 extends JPanel
 			//Max of next node
 			for(Node child : node.getChildren())
 			{
-				value= Math.max(value, expectiMiniMax(child, depth-1, max));
+				value= Math.max(value, expectiMiniMax(child, depth-1, false));
 			}
 			node.setHVal(value);
 		}
@@ -207,13 +207,47 @@ public class Agent2048 extends JPanel
 		}
 	}
 	
-	private boolean weLost(Node node) {
-		// TODO Auto-generated method stub
-		return false;
+	private boolean weLost(Node node) 
+	{
+		for(Tile t : node.getData())
+		{
+			if(t.value < 2)
+			{
+				return false;
+			}
+		}
+		
+		if(game.whatIfLeft(node.getData()).equals(node.getData()))
+		{
+			return false;
+		}
+		
+		if(game.whatIfRight(node.getData()).equals(node.getData()))
+		{
+			return false;
+		}
+		
+		if(game.whatIfUp(node.getData()).equals(node.getData()))
+		{
+			return false;
+		}
+		
+		if(game.whatIfDown(node.getData()).equals(node.getData()))
+		{
+			return false;
+		}
+		return true;
 	}
 
-	private boolean weWon(Node node) {
-		// TODO Auto-generated method stub
+	private boolean weWon(Node node) 
+	{
+		for(Tile t : node.getData())
+		{
+			if(t.equals(new Tile(2048)))
+			{
+				return true;
+			}
+		}
 		return false;
 	}
 
