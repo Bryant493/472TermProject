@@ -9,6 +9,7 @@ public class Node
 	private ArrayList<Node> children;
 	private int hVal;
 	private double prob;
+	private int direction;
 
 	public Node(Tile[] data)
     {
@@ -80,5 +81,13 @@ public class Node
 
 	public void setProb(double prob) {
 		this.prob = prob;
+	}
+
+	public int getDirection() {
+		return direction;
+	}
+
+	public void setDirection(int direction) {
+		this.direction = direction;
 	}
 }
