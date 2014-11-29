@@ -1,5 +1,10 @@
 package project;
 
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+
 public class HeuristicCalc
 {
 
@@ -12,16 +17,74 @@ public class HeuristicCalc
 	public static int getHeuristic(Tile[] tiles)
 	{
 		int[] highestEdge = getHighestEdgeRow(tiles);
-		int score = orderlinessScore(highestEdge);
+		int score = 0;
+		score += orderlinessScore(highestEdge);
 		score += edgeScore(tiles);
+//		score += bottomBlockScore(tiles);
 		score += openBlocksScore(tiles);
 		score += monotonicScore(tiles);
-		
 		score += highestBlockScore(tiles);
+//		score += medianBlockScore(tiles);
 
 		return score;
 	}
 	
+	private static int combinableScore(Tile[] tiles) {
+		// TODO: complete this method
+		int score = 0;
+		for(int i = 0; i < 4; i++) {
+			int prevVal = 0;
+			for(int j = 0; j < 4; j++) {
+			}
+		}
+		return 0;
+	}
+	
+	private static int bottomBlockScore(Tile[] tiles) {
+		int total = 0;
+		int bottomRow = 0;
+		for (int i = 0; i < 16; i++)
+		{
+			total += tiles[i].value;
+			if(i >= 12) {
+				bottomRow += tiles[i].value;
+			}
+		}
+		return (int)((double) bottomRow / total * 100);
+	}
+	
+	private static int medianBlockScore(Tile[] tiles) {
+		ArrayList<Integer> tileValues = new ArrayList<Integer>();
+		for (int i = 0; i < tiles.length; i++)
+		{
+			int tileValue = tiles[i].value;
+			if (tileValue > 0)
+			{
+				tileValues.add(tileValue);
+			}
+		}
+		
+		Collections.sort(tileValues);
+		
+		int median;
+		
+		int numValues = tileValues.size();
+		if (numValues == 0)
+		{
+			// don't worry about case where numValues == 0 because it is an impossible board position
+			median = (tileValues.get(numValues / 2) + tileValues.get(numValues / 2 - 1)) / 2;
+		}
+		else
+		{
+			median = tileValues.get(numValues / 2);
+		}
+		
+		// since 2^16 is the maximum block, maxMedian = (2^7 + 2^8) / 2
+		int maxMedian = 192; 
+		
+		return (int) ((double) median / maxMedian * 100);
+	}
+
 	private static int highestBlockScore(Tile[] tiles)
 	{
 		int max = 0;
@@ -125,7 +188,7 @@ public class HeuristicCalc
 				}
 			}
 		}
-		return (int) (((double) allSquareSum / outerSquareSum) * 100);
+		return (int) (((double) outerSquareSum / allSquareSum) * 100);
 	}
 
 	private static int orderlinessScore(int[] highestEdge)
