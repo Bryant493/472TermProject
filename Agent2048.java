@@ -39,9 +39,9 @@ public class Agent2048 extends JPanel
 	{
 		Node current = new Node(game.getMyTiles());
 		int hVal = 0;
-		buildTree(current, true, depth);
-		while (true)
+		while (!game.myWin && !game.myLose)
 		{
+			buildTree(current, true, depth);
 			hVal = expectiMiniMax(current, depth, true);
 			for (int i = 0; i < current.getChildren().size(); i++)
 			{
@@ -88,11 +88,6 @@ public class Agent2048 extends JPanel
 			// current = findCurrent(current, new Node(game.getMyTiles()));
 			current = new Node(game.getMyTiles());
 			game.repaint();
-			if (game.myWin)
-			{
-				break;
-			}
-			buildTree(current, true, depth);
 		}
 	}
 
@@ -114,7 +109,6 @@ public class Agent2048 extends JPanel
 	public int expectiMiniMax(Node node, int depth, boolean max)
 	{
 		int value;
-		double prob = 0; // probability that the child tile is added
 		if (depth == 0 || node.getChildren().size() == 0)
 		{
 			value = node.getHVal();
@@ -126,7 +120,7 @@ public class Agent2048 extends JPanel
 			// Expect next node
 			for (Node child : node.getChildren())
 			{
-				value += prob * expectiMiniMax(child, depth - 1, true);
+				value += child.getProb() * expectiMiniMax(child, depth - 1, true);
 			}
 			node.setHVal(value);
 		}
@@ -188,27 +182,38 @@ public class Agent2048 extends JPanel
 		else
 		{
 			Node possible = new Node(game.cloneTiles(start.getData()));
-
-			for (int i = 0; i < possible.getData().length; i++)
+	//count the number of empty tiles
+			int numEmpty=0;
+			for(Tile t: possible.getData())
 			{
-				if (possible.getData()[i].value == 0)
+				if(t.isEmpty())
+				{
+					numEmpty++;
+				}
+			}
+			
+			for (Tile t: possible.getData())
+			{
+				if (t.value == 0)
 				{
 
-					possible.getData()[i].value = 2;
+					t.value = 2;
 					Node nodeWithAdded2 = new Node(game.cloneTiles(possible.getData()));
+					nodeWithAdded2.setProb(0.9*(1/(double) numEmpty));
 					start.getChildren().add(nodeWithAdded2);
 					if (!weLost(nodeWithAdded2))
 					{
-						buildTree(new Node(game.cloneTiles(possible.getData())), true, depth - 1);
+						buildTree(nodeWithAdded2, true, depth - 1);
 					}
-					possible.getData()[i].value = 4;
+					t.value = 4;
 					Node nodeWithAdded4 = new Node(game.cloneTiles(possible.getData()));
 					start.getChildren().add(nodeWithAdded4);
+					nodeWithAdded4.setProb(0.1*(1/(double) numEmpty));
 					if (!weLost(nodeWithAdded4))
 					{
-						buildTree(new Node(game.cloneTiles(possible.getData())), true, depth - 1);
+						buildTree(nodeWithAdded4, true, depth - 1);
 					}
-					possible.getData()[i].value = 0;
+					t.value = 0;
 				}
 			}
 

@@ -8,6 +8,7 @@ public class Node
 	private Tile[] data;
 	private ArrayList<Node> children;
 	private int hVal;
+	private double prob;
 
 	public Node(Tile[] data)
     {
@@ -71,5 +72,13 @@ public class Node
 			}
 		}
 		return true;
+	}
+
+	public double getProb() {
+		return prob;
+	}
+
+	public void setProb(double prob) {
+		this.prob = prob;
 	}
 }
