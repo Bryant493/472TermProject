@@ -1,8 +1,6 @@
 package project;
 
-import java.util.List;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 
 public class HeuristicCalc
@@ -18,17 +16,60 @@ public class HeuristicCalc
 	{
 		int[] highestEdge = getHighestEdgeRow(tiles);
 		int score = 0;
-		score += orderlinessScore(highestEdge);
-		score += edgeScore(tiles);
-//		score += bottomBlockScore(tiles);
-		score += openBlocksScore(tiles);
-		score += monotonicScore(tiles);
-		score += highestBlockScore(tiles);
+		score += gradientScore(tiles);
+//		score += snakeScore(tiles);
+//		score += orderlinessScore(highestEdge);
+//		score += edgeScore(tiles);
+//		score += topBlockScore(tiles);
+//		score += openBlocksScore(tiles);
+//		score += monotonicScore(tiles);
+//		score += highestBlockScore(tiles);
 //		score += medianBlockScore(tiles);
 
 		return score;
 	}
 	
+	private static int gradientScore(Tile[] tiles) {
+		int[] gradientTopLeft = new int[] {
+				3, 2, 1, 0,
+				2, 1, 0, -1,
+				1, 0, -1, -2,
+				0, -1, -2, -3
+		};
+		int[] gradientTopRight = new int[] {
+				0, 1, 2, 3,
+				-1, 0, 1, 2,
+				-2, -1, 0, 1,
+				-3, -2, -1, 0
+		};
+		int[] gradientBottomRight = new int[] {
+				-3, -2, -1, 0,
+				-2, -1, 0, 1,
+				-1, 0, 1, 2,
+				0, 1, 2, 3
+		};
+		int[] gradientBottomLeft = new int[] {
+				0, -1, -2, -3,
+				1, 0, -1, -2,
+				2, 1, 0, -1,
+				3, 2, 1, 0
+		};
+		
+		int topLeftScore = 0;
+		int topRightScore = 0;
+		int bottomLeftScore = 0;
+		int bottomRightScore = 0;
+		for (int i = 0; i < 16; i++)
+		{
+			topLeftScore += tiles[i].value * gradientTopLeft[i];
+			topRightScore += tiles[i].value * gradientTopRight[i];
+			bottomLeftScore += tiles[i].value * gradientBottomLeft[i];
+			bottomRightScore += tiles[i].value * gradientBottomRight[i];
+		}
+		int maxTop = Math.max(topLeftScore, topRightScore);
+		int maxBottom = Math.max(bottomLeftScore, bottomRightScore);
+		return Math.max(maxTop, maxBottom);
+	}
 	private static int combinableScore(Tile[] tiles) {
 		// TODO: complete this method
 		int score = 0;
@@ -40,17 +81,17 @@ public class HeuristicCalc
 		return 0;
 	}
 	
-	private static int bottomBlockScore(Tile[] tiles) {
+	private static int topBlockScore(Tile[] tiles) {
 		int total = 0;
-		int bottomRow = 0;
+		int topRow = 0;
 		for (int i = 0; i < 16; i++)
 		{
 			total += tiles[i].value;
-			if(i >= 12) {
-				bottomRow += tiles[i].value;
+			if(i < 4) {
+				topRow += tiles[i].value;
 			}
 		}
-		return (int)((double) bottomRow / total * 100);
+		return (int)((double) topRow / total * 100);
 	}
 	
 	private static int medianBlockScore(Tile[] tiles) {
@@ -100,6 +141,41 @@ public class HeuristicCalc
 		int percent = (int) ((double) max / 65536 * 100);
 
 		return Math.max(100, percent);
+	}
+	
+	private static int snakeScore(Tile[] tiles)
+	{
+		int score = 0;
+		for (int i = 0; i < 4; i++)
+		{
+			for (int j = 0; j < 4; j++)
+			{
+				if(j % 2 == 0) {
+					
+				}
+				
+			}
+		}
+		score += (tiles[12].value <= tiles[13].value) ? (8) : (0);
+		score += (tiles[13].value <= tiles[14].value) ? (8) : (0);
+		score += (tiles[14].value <= tiles[13].value) ? (8) : (0);
+		score += (tiles[15].value <= tiles[11].value) ? (8) : (0);
+		
+		score += (tiles[11].value <= tiles[10].value) ? (4) : (0);
+		score += (tiles[10].value <= tiles[9].value) ? (4) : (0);
+		score += (tiles[9].value <= tiles[8].value) ? (4) : (0);
+		score += (tiles[8].value <= tiles[4].value) ? (4) : (0);
+		
+		score += (tiles[4].value <= tiles[5].value) ? (2) : (0);
+		score += (tiles[5].value <= tiles[6].value) ? (2) : (0);
+		score += (tiles[6].value <= tiles[7].value) ? (2) : (0);
+		score += (tiles[7].value <= tiles[3].value) ? (2) : (0);
+		
+		score += (tiles[3].value <= tiles[2].value) ? (1) : (0);
+		score += (tiles[2].value <= tiles[1].value) ? (1) : (0);
+		score += (tiles[1].value <= tiles[0].value) ? (1) : (0);
+		
+		return (int) ((double)score * 100);
 	}
 
 	private static int monotonicScore(Tile[] tiles)
