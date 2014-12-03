@@ -38,17 +38,19 @@ public class Agent2048 extends JPanel
 	public void runAI(int depth) throws InterruptedException
 	{
 		Node current = new Node(game.getMyTiles());
-		int hVal = 0;
+		double hVal = 0;
 		buildTree(current, true, depth);
-		while (true)
+		while(!weWon(current) && !weLost(current))
 		{
+			boolean weWon = weWon(current);
+			boolean weLost = weLost(current);
 			hVal = expectiMiniMax(current, depth, true);
-			for (Node n: current.getChildren())
+			for (Node n : current.getChildren())
 			{
 				// find the child with the calculated expectiMiniMaxValue
 				if (n.getHVal() == hVal)
 				{
-					int direction=n.getDirection();
+					int direction = n.getDirection();
 					// left
 					if (direction == 0)
 					{
@@ -80,15 +82,8 @@ public class Agent2048 extends JPanel
 				}
 			}
 			game.repaint();
-			game.addTile(game.getMyTiles());
-			// follow down the tree
-			// current = findCurrent(current, new Node(game.getMyTiles()));
 			current = new Node(game.getMyTiles());
 			game.repaint();
-			if (game.myWin)
-			{
-				break;
-			}
 			buildTree(current, true, depth);
 		}
 	}
@@ -108,9 +103,9 @@ public class Agent2048 extends JPanel
 	 *            Expect)
 	 * @return value
 	 */
-	public int expectiMiniMax(Node node, int depth, boolean max)
+	public double expectiMiniMax(Node node, int depth, boolean max)
 	{
-		int value;
+		double value = 0;
 		if (depth == 0 || node.getChildren().size() == 0)
 		{
 			value = node.getHVal();
@@ -118,7 +113,6 @@ public class Agent2048 extends JPanel
 
 		else if (!max)
 		{
-			value = 0;
 			// Expect next node
 			for (Node child : node.getChildren())
 			{
@@ -129,7 +123,6 @@ public class Agent2048 extends JPanel
 
 		else
 		{
-			value = 0;
 			// Max of next node
 			for (Node child : node.getChildren())
 			{
@@ -188,36 +181,36 @@ public class Agent2048 extends JPanel
 		else
 		{
 			Node possible = new Node(game.cloneTiles(start.getData()));
-			//count the number of empty tiles
-			int numEmpty=0;
-			for(Tile t: possible.getData())
+			// count the number of empty tiles
+			int numEmpty = 0;
+			for (Tile t : possible.getData())
 			{
-				if(t.isEmpty())
+				if (t.isEmpty())
 				{
 					numEmpty++;
 				}
 			}
-			
-			for (Tile t: possible.getData())
+
+			for (Tile t : possible.getData())
 			{
 				if (t.value == 0)
 				{
 
 					t.value = 2;
 					Node nodeWithAdded2 = new Node(game.cloneTiles(possible.getData()));
-					nodeWithAdded2.setProb(0.9*(1/(double) numEmpty));
+					nodeWithAdded2.setProb(0.9 * (1 / (double) numEmpty));
 					start.getChildren().add(nodeWithAdded2);
 					if (!weLost(nodeWithAdded2))
 					{
-						buildTree(new Node(game.cloneTiles(possible.getData())), true, depth - 1);
+						buildTree(nodeWithAdded2, true, depth - 1);
 					}
 					t.value = 4;
 					Node nodeWithAdded4 = new Node(game.cloneTiles(possible.getData()));
-					nodeWithAdded4.setProb(0.1*(1/(double) numEmpty));
+					nodeWithAdded4.setProb(0.1 * (1 / (double) numEmpty));
 					start.getChildren().add(nodeWithAdded4);
 					if (!weLost(nodeWithAdded4))
 					{
-						buildTree(new Node(game.cloneTiles(possible.getData())), true, depth - 1);
+						buildTree(nodeWithAdded4, true, depth - 1);
 					}
 					t.value = 0;
 				}
@@ -225,21 +218,24 @@ public class Agent2048 extends JPanel
 
 		}
 	}
+	
+	private boolean tileArraysAreEqual(Tile[] arr1, Tile[] arr2) {
+		for(int i = 0; i < 16; i++) {
+			if(!arr1[i].equals(arr2[i])) {
+				return false;
+			}
+		}
+		return true;
+	}
 
 	private boolean weLost(Node node)
 	{
-		if (game.whatIfLeft(node.getData()).equals(node.getData()))
+		if (tileArraysAreEqual(game.whatIfLeft(node.getData()), node.getData())
+			&& tileArraysAreEqual(game.whatIfRight(node.getData()), node.getData())
+			&& tileArraysAreEqual(game.whatIfUp(node.getData()), node.getData())
+			&& tileArraysAreEqual(game.whatIfDown(node.getData()), node.getData()))
 		{
-			if (game.whatIfRight(node.getData()).equals(node.getData()))
-			{
-				if (game.whatIfUp(node.getData()).equals(node.getData()))
-				{
-					if (game.whatIfDown(node.getData()).equals(node.getData()))
-					{
-						return true;
-					}
-				}
-			}
+			return true;
 		}
 		return false;
 	}
@@ -265,32 +261,32 @@ public class Agent2048 extends JPanel
 		System.out.println("\n");
 	}
 
-	private Node findCurrent(Node current, Node next)
-	{
-		for (Node t : current.getChildren())
-		{
-			if (t.equals(next))
-			{
-				return t;
-			}
-		}
-		return null;
-	}
-
 	public static void main(String args[]) throws InterruptedException
 	{
-		Game2048 twentyFortyEight = new Game2048();
-		Agent2048 agent = new Agent2048(twentyFortyEight);
+		for (int i = 0; i < 10; i++)
+		{
+			Game2048 twentyFortyEight = new Game2048();
+			Agent2048 agent = new Agent2048(twentyFortyEight);
 
-		JFrame game = new JFrame();
-		game.setTitle("2048 Game");
-		game.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-		game.setSize(340, 400);
-		game.setResizable(false);
-		game.setVisible(true);
-		game.add(twentyFortyEight);
-		game.setLocationRelativeTo(null);
+//			JFrame game = new JFrame();
+//			game.setTitle("2048 Game");
+//			game.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+//			game.setSize(340, 400);
+//			game.setResizable(false);
+//			game.setVisible(true);
+//			game.add(twentyFortyEight);
+//			game.setLocationRelativeTo(null);
 
-		agent.runAI(6);
+			agent.runAI(6);
+			int max = twentyFortyEight.getMyTiles()[0].value;
+			for (Tile t : twentyFortyEight.getMyTiles())
+			{
+				if (t.value > max)
+				{
+					max = t.value;
+				}
+			}
+			System.out.println(max);
+		}
 	}
 }

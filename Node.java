@@ -7,7 +7,7 @@ public class Node
 {
 	private Tile[] data;
 	private ArrayList<Node> children;
-	private int hVal;
+	private double hVal;
 	private double prob;
 	private int direction;
 
@@ -53,12 +53,12 @@ public class Node
 		return data;
 	}
 	
-	public int getHVal()
+	public double getHVal()
 	{
 		return hVal;
 	}
 	
-	public void setHVal(int hVal)
+	public void setHVal(double hVal)
 	{
 		this.hVal = hVal;
 	}

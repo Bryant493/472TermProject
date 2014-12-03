@@ -245,7 +245,7 @@ public class HeuristicCalc
 		}
 		
 		// total numOpenBlocks is 16
-		return (int) ((double) numOpenBlocks / 16 * 100);
+		return (int) ((double) numOpenBlocks / 16 * 200);
 	}
 
 	private static int edgeScore(Tile[] tiles)
