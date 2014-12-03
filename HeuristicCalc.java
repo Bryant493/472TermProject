@@ -11,24 +11,24 @@ public class HeuristicCalc
 	static final int RIGHT = 1;
 	static final int UP = 2;
 	static final int DOWN = 3;
-	
+
 	public static int getHeuristic(Tile[] tiles)
 	{
 		int[] highestEdge = getHighestEdgeRow(tiles);
 		int score = 0;
-		score += gradientScore(tiles);
-//		score += snakeScore(tiles);
-//		score += orderlinessScore(highestEdge);
-//		score += edgeScore(tiles);
-//		score += topBlockScore(tiles);
-//		score += openBlocksScore(tiles);
-//		score += monotonicScore(tiles);
-//		score += highestBlockScore(tiles);
-//		score += medianBlockScore(tiles);
+		//		score += gradientScore(tiles);
+		score += snakeScore(tiles);
+		//		score += orderlinessScore(highestEdge);
+		//		score += edgeScore(tiles);
+		//		score += topBlockScore(tiles);
+		//		score += openBlocksScore(tiles);
+		//		score += monotonicScore(tiles);
+		//		score += highestBlockScore(tiles);
+		//		score += medianBlockScore(tiles);
 
 		return score;
 	}
-	
+
 	private static int gradientScore(Tile[] tiles) {
 		int[] gradientTopLeft = new int[] {
 				3, 2, 1, 0,
@@ -54,7 +54,7 @@ public class HeuristicCalc
 				2, 1, 0, -1,
 				3, 2, 1, 0
 		};
-		
+
 		int topLeftScore = 0;
 		int topRightScore = 0;
 		int bottomLeftScore = 0;
@@ -80,7 +80,7 @@ public class HeuristicCalc
 		}
 		return 0;
 	}
-	
+
 	private static int topBlockScore(Tile[] tiles) {
 		int total = 0;
 		int topRow = 0;
@@ -93,7 +93,7 @@ public class HeuristicCalc
 		}
 		return (int)((double) topRow / total * 100);
 	}
-	
+
 	private static int medianBlockScore(Tile[] tiles) {
 		ArrayList<Integer> tileValues = new ArrayList<Integer>();
 		for (int i = 0; i < tiles.length; i++)
@@ -104,11 +104,11 @@ public class HeuristicCalc
 				tileValues.add(tileValue);
 			}
 		}
-		
+
 		Collections.sort(tileValues);
-		
+
 		int median;
-		
+
 		int numValues = tileValues.size();
 		if (numValues == 0)
 		{
@@ -119,10 +119,10 @@ public class HeuristicCalc
 		{
 			median = tileValues.get(numValues / 2);
 		}
-		
+
 		// since 2^16 is the maximum block, maxMedian = (2^7 + 2^8) / 2
 		int maxMedian = 192; 
-		
+
 		return (int) ((double) median / maxMedian * 100);
 	}
 
@@ -142,40 +142,27 @@ public class HeuristicCalc
 
 		return Math.max(100, percent);
 	}
-	
+
 	private static int snakeScore(Tile[] tiles)
 	{
+		int[][] matrix = {
+				{20, 15, 12, 10},
+				{1, 3, 5, 7},
+				{-1, -2, -3, -4},
+				{-8, -7, -6, -5}
+
+		};
+
+
 		int score = 0;
 		for (int i = 0; i < 4; i++)
 		{
 			for (int j = 0; j < 4; j++)
 			{
-				if(j % 2 == 0) {
-					
-				}
-				
+				score += tiles[j + i * 4].value * matrix[i][j];
 			}
 		}
-		score += (tiles[12].value <= tiles[13].value) ? (8) : (0);
-		score += (tiles[13].value <= tiles[14].value) ? (8) : (0);
-		score += (tiles[14].value <= tiles[13].value) ? (8) : (0);
-		score += (tiles[15].value <= tiles[11].value) ? (8) : (0);
-		
-		score += (tiles[11].value <= tiles[10].value) ? (4) : (0);
-		score += (tiles[10].value <= tiles[9].value) ? (4) : (0);
-		score += (tiles[9].value <= tiles[8].value) ? (4) : (0);
-		score += (tiles[8].value <= tiles[4].value) ? (4) : (0);
-		
-		score += (tiles[4].value <= tiles[5].value) ? (2) : (0);
-		score += (tiles[5].value <= tiles[6].value) ? (2) : (0);
-		score += (tiles[6].value <= tiles[7].value) ? (2) : (0);
-		score += (tiles[7].value <= tiles[3].value) ? (2) : (0);
-		
-		score += (tiles[3].value <= tiles[2].value) ? (1) : (0);
-		score += (tiles[2].value <= tiles[1].value) ? (1) : (0);
-		score += (tiles[1].value <= tiles[0].value) ? (1) : (0);
-		
-		return (int) ((double)score * 100);
+		return score;
 	}
 
 	private static int monotonicScore(Tile[] tiles)
@@ -194,7 +181,7 @@ public class HeuristicCalc
 				numMonotonic++;
 			}
 		}
-		
+
 		// maximum numMonotonic is 8 (rows + columns)
 		return (int) ((double) numMonotonic / 8 * 100);
 	}
@@ -243,7 +230,7 @@ public class HeuristicCalc
 				numOpenBlocks++;
 			}
 		}
-		
+
 		// total numOpenBlocks is 16
 		return (int) ((double) numOpenBlocks / 16 * 200);
 	}
@@ -270,18 +257,18 @@ public class HeuristicCalc
 	private static int orderlinessScore(int[] highestEdge)
 	{
 		int score = 0;
-		
+
 		for (int i = 1; i < 3; i++)
 		{
 			boolean increasingBefore = highestEdge[i-1] < highestEdge[i];
 			boolean increasingNow = highestEdge[i] < highestEdge[i+1];
 			if ((increasingBefore && increasingNow) || 
-				(!increasingBefore && !increasingNow)) 
+					(!increasingBefore && !increasingNow))
 			{
 				++score;
 			}
 		}
-		
+
 		return (int) ((double) score / 3 * 100);
 	}
 
@@ -289,7 +276,7 @@ public class HeuristicCalc
 	{
 		int[] sums = new int[4];
 		int[][] edges = new int[4][4];
-		
+
 		for (int i = 0; i < 4; i++)
 		{
 			// Tile (x, y) is located at tiles[x + y * 4]
@@ -297,13 +284,13 @@ public class HeuristicCalc
 			edges[RIGHT][i] = tiles[3 + i * 4].value;
 			edges[UP][i] = tiles[i + 0 * 4].value;
 			edges[DOWN][i] = tiles[i + 3 * 4].value;
-			
+
 			sums[LEFT] += edges[LEFT][i];
 			sums[RIGHT] += edges[RIGHT][i];
 			sums[UP] += edges[UP][i];
 			sums[DOWN] += edges[DOWN][i];
 		}
-		
+
 		int max = Integer.MIN_VALUE;
 		int maxi = 0;
 		for (int i = 0; i < 4; i++)
@@ -314,7 +301,7 @@ public class HeuristicCalc
 				maxi = i;
 			}
 		}
-		
+
 		return edges[maxi];
 	}
 }
