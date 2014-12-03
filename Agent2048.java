@@ -40,7 +40,7 @@ public class Agent2048 extends JPanel
 		Node current = new Node(game.getMyTiles());
 		double hVal = 0;
 		buildTree(current, true, depth);
-		while(!weWon(current) && !weLost(current))
+		while(!weLost(current))
 		{
 			boolean weWon = weWon(current);
 			boolean weLost = weLost(current);
