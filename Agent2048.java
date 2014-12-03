@@ -263,7 +263,7 @@ public class Agent2048 extends JPanel
 
 	public static void main(String args[]) throws InterruptedException
 	{
-		for (int i = 0; i < 10; i++)
+		for (int i = 0; i < 25; i++)
 		{
 			Game2048 twentyFortyEight = new Game2048();
 			Agent2048 agent = new Agent2048(twentyFortyEight);
