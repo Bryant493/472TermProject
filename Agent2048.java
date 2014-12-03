@@ -105,7 +105,7 @@ public class Agent2048 extends JPanel
 	 */
 	public double expectiMiniMax(Node node, int depth, boolean max)
 	{
-		double value = 0;
+		double value;
 		if (depth == 0 || node.getChildren().size() == 0)
 		{
 			value = node.getHVal();
@@ -113,6 +113,7 @@ public class Agent2048 extends JPanel
 
 		else if (!max)
 		{
+			value = 0;
 			// Expect next node
 			for (Node child : node.getChildren())
 			{
@@ -123,6 +124,7 @@ public class Agent2048 extends JPanel
 
 		else
 		{
+			value = -Double.MAX_VALUE;
 			// Max of next node
 			for (Node child : node.getChildren())
 			{
