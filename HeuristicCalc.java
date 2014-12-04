@@ -110,7 +110,7 @@ public class HeuristicCalc
 		int median;
 
 		int numValues = tileValues.size();
-		if (numValues == 0)
+		if (numValues % 2 == 0)
 		{
 			// don't worry about case where numValues == 0 because it is an impossible board position
 			median = (tileValues.get(numValues / 2) + tileValues.get(numValues / 2 - 1)) / 2;
