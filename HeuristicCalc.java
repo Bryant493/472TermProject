@@ -12,20 +12,43 @@ public class HeuristicCalc
 	static final int UP = 2;
 	static final int DOWN = 3;
 
-	public static int getHeuristic(Tile[] tiles)
+	public static int getHeuristic(Tile[] tiles, String strat)
 	{
-		int[] highestEdge = getHighestEdgeRow(tiles);
 		int score = 0;
-		//		score += gradientScore(tiles);
+		
+		switch(strat)
+		{
+			case "gradient":
+				score += gradientScore(tiles);
+				break;
+			case "snake":
 				score += snakeScore(tiles);
-		//		score += orderlinessScore(highestEdge);
-		//		score += edgeScore(tiles);
-		//		score += topBlockScore(tiles);
-		//		score += openBlocksScore(tiles);
-		//		score += monotonicScore(tiles);
-		//		score += highestBlockScore(tiles);
-		//		score += medianBlockScore(tiles);
-
+				break;
+			case "order":
+				score += orderlinessScore(getHighestEdgeRow(tiles));
+				break;
+			case "edge":
+				score += edgeScore(tiles);
+				break;
+			case "top":
+				score += topBlockScore(tiles);
+				break;
+			case "open":
+				score += openBlocksScore(tiles);
+				break;
+			case "monotonic":
+				score += monotonicScore(tiles);
+				break;
+			case "highest":
+				score += highestBlockScore(tiles);
+				break;
+			case "median":
+				score += medianBlockScore(tiles);
+				break;
+			default: 
+				score += snakeScore(tiles);
+				break;
+		}
 		return score;
 	}
 

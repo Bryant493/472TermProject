@@ -11,11 +11,11 @@ public class Node
 	private double prob;
 	private int direction;
 
-	public Node(Tile[] data)
+	public Node(Tile[] data, String strat)
     {
 		this.data = data;
        	children = new ArrayList<Node>();
-       	hVal = HeuristicCalc.getHeuristic(data);
+       	hVal = HeuristicCalc.getHeuristic(data, strat);
     }
 
 	@Override

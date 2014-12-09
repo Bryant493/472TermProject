@@ -1,8 +1,5 @@
 package project;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
@@ -15,6 +12,9 @@ import javax.swing.WindowConstants;
  */
 public class Agent2048 extends JPanel
 {
+
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * 2048 game to be manipulated
 	 */
@@ -27,14 +27,17 @@ public class Agent2048 extends JPanel
 	private final int UP = 2;
 
 	private final int DOWN = 3;
+	
+	private final String strategy;
 
 	/**
 	 * Constructs an Agent 2048 object with a given 2048 game
 	 */
-	public Agent2048(Game2048 givenGame)
+	public Agent2048(Game2048 givenGame, String strategy)
 	{
 		this.game = givenGame;
 		game.setFocusable(true);
+		this.strategy = strategy;
 	}
 
 	/**
@@ -45,7 +48,7 @@ public class Agent2048 extends JPanel
 	 */
 	public void runAI(int depth) throws InterruptedException
 	{
-		Node current = new Node(game.getMyTiles());
+		Node current = new Node(game.getMyTiles(), strategy);
 		double hVal = 0;
 		buildTree(current, true, depth);
 		while (!game.myLose)
@@ -80,7 +83,7 @@ public class Agent2048 extends JPanel
 				}
 			}
 			game.repaint();
-			current = new Node(game.getMyTiles());
+			current = new Node(game.getMyTiles(), strategy);
 			buildTree(current, true, depth);
 		}
 	}
@@ -141,25 +144,25 @@ public class Agent2048 extends JPanel
 
 		if (max)
 		{
-			Node left = new Node(game.whatIfLeft(start.getData()));
+			Node left = new Node(game.whatIfLeft(start.getData()), strategy);
 			left.setDirection(LEFT);
 			if (!left.equals(start))
 			{
 				start.getChildren().add(left);
 			}
-			Node right = new Node(game.whatIfRight(start.getData()));
+			Node right = new Node(game.whatIfRight(start.getData()), strategy);
 			right.setDirection(RIGHT);
 			if (!right.equals(start))
 			{
 				start.getChildren().add(right);
 			}
-			Node up = new Node(game.whatIfUp(start.getData()));
+			Node up = new Node(game.whatIfUp(start.getData()), strategy);
 			up.setDirection(UP);
 			if (!up.equals(start))
 			{
 				start.getChildren().add(up);
 			}
-			Node down = new Node(game.whatIfDown(start.getData()));
+			Node down = new Node(game.whatIfDown(start.getData()), strategy);
 			down.setDirection(DOWN);
 			if (!down.equals(start))
 			{
@@ -179,7 +182,7 @@ public class Agent2048 extends JPanel
 
 		else
 		{
-			Node possible = new Node(game.cloneTiles(start.getData()));
+			Node possible = new Node(game.cloneTiles(start.getData()), strategy);
 			// count the number of empty tiles
 			int numEmpty = 0;
 			for (Tile t : possible.getData())
@@ -196,7 +199,7 @@ public class Agent2048 extends JPanel
 				{
 
 					t.value = 2;
-					Node nodeWithAdded2 = new Node(game.cloneTiles(possible.getData()));
+					Node nodeWithAdded2 = new Node(game.cloneTiles(possible.getData()), strategy);
 					nodeWithAdded2.setProb(0.9 * (1 / (double) numEmpty));
 					start.getChildren().add(nodeWithAdded2);
 					if (!weLost(nodeWithAdded2))
@@ -204,7 +207,7 @@ public class Agent2048 extends JPanel
 						buildTree(nodeWithAdded2, true, depth - 1);
 					}
 					t.value = 4;
-					Node nodeWithAdded4 = new Node(game.cloneTiles(possible.getData()));
+					Node nodeWithAdded4 = new Node(game.cloneTiles(possible.getData()), strategy);
 					nodeWithAdded4.setProb(0.1 * (1 / (double) numEmpty));
 					start.getChildren().add(nodeWithAdded4);
 					if (!weLost(nodeWithAdded4))
@@ -264,8 +267,10 @@ public class Agent2048 extends JPanel
 	{
 		Game2048 twentyFortyEight = new Game2048();
 		
+		String strategy = args[0];
+		int depth = Integer.parseInt(args[1]);
 		
-		Agent2048 agent = new Agent2048(twentyFortyEight);
+		Agent2048 agent = new Agent2048(twentyFortyEight, strategy);
 		
 		JFrame game = new JFrame();
 		game.setTitle("2048 Game");
@@ -277,7 +282,7 @@ public class Agent2048 extends JPanel
 		game.setLocationRelativeTo(null);
 
 		long start = System.nanoTime();
-		agent.runAI(5);
+		agent.runAI(depth);
 		long stop = System.nanoTime();
 
 		int max = twentyFortyEight.getMyTiles()[0].value;
