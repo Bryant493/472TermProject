@@ -17,7 +17,7 @@ public class HeuristicCalc
 		int[] highestEdge = getHighestEdgeRow(tiles);
 		int score = 0;
 		//		score += gradientScore(tiles);
-		score += snakeScore(tiles);
+				score += snakeScore(tiles);
 		//		score += orderlinessScore(highestEdge);
 		//		score += edgeScore(tiles);
 		//		score += topBlockScore(tiles);
@@ -146,8 +146,8 @@ public class HeuristicCalc
 	private static int snakeScore(Tile[] tiles)
 	{
 		int[][] matrix = {
-				{20, 15, 12, 10},
-				{1, 3, 5, 7},
+				{36, 28, 21, 15},
+				{1, 3, 6, 10},
 				{-1, -2, -3, -4},
 				{-8, -7, -6, -5}
 

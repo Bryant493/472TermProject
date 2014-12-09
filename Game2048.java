@@ -259,6 +259,7 @@ public class Game2048 extends JPanel
 			{
 				num *= 2;
 				myScore += num;
+				//int ourTarget = 2048;
 				int ourTarget = Integer.MAX_VALUE;
 				if (num == ourTarget)
 				{

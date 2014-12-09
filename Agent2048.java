@@ -20,6 +20,14 @@ public class Agent2048 extends JPanel
 	 */
 	private Game2048 game;
 
+	private final int LEFT = 0;
+
+	private final int RIGHT = 1;
+
+	private final int UP = 2;
+
+	private final int DOWN = 3;
+
 	/**
 	 * Constructs an Agent 2048 object with a given 2048 game
 	 */
@@ -40,10 +48,8 @@ public class Agent2048 extends JPanel
 		Node current = new Node(game.getMyTiles());
 		double hVal = 0;
 		buildTree(current, true, depth);
-		while(!weLost(current))
+		while (!game.myLose)
 		{
-			boolean weWon = weWon(current);
-			boolean weLost = weLost(current);
 			hVal = expectiMiniMax(current, depth, true);
 			for (Node n : current.getChildren())
 			{
@@ -51,39 +57,30 @@ public class Agent2048 extends JPanel
 				if (n.getHVal() == hVal)
 				{
 					int direction = n.getDirection();
-					// left
-					if (direction == 0)
+					if (direction == LEFT)
 					{
 						game.left();
-						// move to this node in tree
 						break;
 					}
-					// right
-					else if (direction == 1)
+					else if (direction == RIGHT)
 					{
 						game.right();
-						// move to this node in tree
 						break;
 					}
-					// up
-					else if (direction == 2)
+					else if (direction == UP)
 					{
 						game.up();
-						// move to this node in tree
 						break;
 					}
-					// down
-					else if (direction == 3)
+					else if (direction == DOWN)
 					{
 						game.down();
-						// move to this node in tree
 						break;
 					}
 				}
 			}
 			game.repaint();
 			current = new Node(game.getMyTiles());
-			game.repaint();
 			buildTree(current, true, depth);
 		}
 	}
@@ -145,25 +142,25 @@ public class Agent2048 extends JPanel
 		if (max)
 		{
 			Node left = new Node(game.whatIfLeft(start.getData()));
-			left.setDirection(0);
+			left.setDirection(LEFT);
 			if (!left.equals(start))
 			{
 				start.getChildren().add(left);
 			}
 			Node right = new Node(game.whatIfRight(start.getData()));
-			right.setDirection(1);
+			right.setDirection(RIGHT);
 			if (!right.equals(start))
 			{
 				start.getChildren().add(right);
 			}
 			Node up = new Node(game.whatIfUp(start.getData()));
-			up.setDirection(2);
+			up.setDirection(UP);
 			if (!up.equals(start))
 			{
 				start.getChildren().add(up);
 			}
 			Node down = new Node(game.whatIfDown(start.getData()));
-			down.setDirection(3);
+			down.setDirection(DOWN);
 			if (!down.equals(start))
 			{
 				start.getChildren().add(down);
@@ -220,10 +217,13 @@ public class Agent2048 extends JPanel
 
 		}
 	}
-	
-	private boolean tileArraysAreEqual(Tile[] arr1, Tile[] arr2) {
-		for(int i = 0; i < 16; i++) {
-			if(!arr1[i].equals(arr2[i])) {
+
+	private boolean tileArraysAreEqual(Tile[] arr1, Tile[] arr2)
+	{
+		for (int i = 0; i < 16; i++)
+		{
+			if (!arr1[i].equals(arr2[i]))
+			{
 				return false;
 			}
 		}
@@ -232,10 +232,7 @@ public class Agent2048 extends JPanel
 
 	private boolean weLost(Node node)
 	{
-		if (tileArraysAreEqual(game.whatIfLeft(node.getData()), node.getData())
-			&& tileArraysAreEqual(game.whatIfRight(node.getData()), node.getData())
-			&& tileArraysAreEqual(game.whatIfUp(node.getData()), node.getData())
-			&& tileArraysAreEqual(game.whatIfDown(node.getData()), node.getData()))
+		if (tileArraysAreEqual(game.whatIfLeft(node.getData()), node.getData()) && tileArraysAreEqual(game.whatIfRight(node.getData()), node.getData()) && tileArraysAreEqual(game.whatIfUp(node.getData()), node.getData()) && tileArraysAreEqual(game.whatIfDown(node.getData()), node.getData()))
 		{
 			return true;
 		}
@@ -265,30 +262,35 @@ public class Agent2048 extends JPanel
 
 	public static void main(String args[]) throws InterruptedException
 	{
-		for (int i = 0; i < 25; i++)
+		Game2048 twentyFortyEight = new Game2048();
+		
+		
+		Agent2048 agent = new Agent2048(twentyFortyEight);
+		
+		JFrame game = new JFrame();
+		game.setTitle("2048 Game");
+		game.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		game.setSize(340, 400);
+		game.setResizable(false);
+		game.setVisible(true);
+		game.add(twentyFortyEight);
+		game.setLocationRelativeTo(null);
+
+		long start = System.nanoTime();
+		agent.runAI(5);
+		long stop = System.nanoTime();
+
+		int max = twentyFortyEight.getMyTiles()[0].value;
+		for (Tile t : twentyFortyEight.getMyTiles())
 		{
-			Game2048 twentyFortyEight = new Game2048();
-			Agent2048 agent = new Agent2048(twentyFortyEight);
-
-//			JFrame game = new JFrame();
-//			game.setTitle("2048 Game");
-//			game.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-//			game.setSize(340, 400);
-//			game.setResizable(false);
-//			game.setVisible(true);
-//			game.add(twentyFortyEight);
-//			game.setLocationRelativeTo(null);
-
-			agent.runAI(6);
-			int max = twentyFortyEight.getMyTiles()[0].value;
-			for (Tile t : twentyFortyEight.getMyTiles())
+			if (t.value > max)
 			{
-				if (t.value > max)
-				{
-					max = t.value;
-				}
+				max = t.value;
 			}
-			System.out.println(max);
 		}
+		System.out.println(max);
+		System.out.println((double) (stop - start) / 1000000000);
+		long maxBytes = Runtime.getRuntime().maxMemory();
+		System.out.println(maxBytes);
 	}
 }
