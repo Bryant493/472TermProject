@@ -274,9 +274,7 @@ public class Agent2048 extends JPanel
 		game.add(twentyFortyEight);
 		game.setLocationRelativeTo(null);
 
-		long start = System.nanoTime();
 		agent.runAI(depth);
-		long stop = System.nanoTime();
 
 		int max = twentyFortyEight.getMyTiles()[0].value;
 		for (Tile t : twentyFortyEight.getMyTiles())

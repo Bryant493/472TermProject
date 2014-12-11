@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -67,7 +66,7 @@ public class Game2048 extends JPanel
 
 	public void left()
 	{
-		boolean shifted = leftUsingTiles(myTiles);
+		boolean shifted = leftUsingTiles(myTiles, true);
 		if (shifted)
 		{
 			addTile(myTiles);
@@ -95,13 +94,13 @@ public class Game2048 extends JPanel
 		myTiles = rotate(270);
 	}
 
-	private boolean leftUsingTiles(Tile[] tiles)
+	private boolean leftUsingTiles(Tile[] tiles, boolean isScoring)
 	{
 		boolean needAddTile = false;
 		for (int i = 0; i < 4; i++)
 		{
 			Tile[] line = getLine(i, tiles);
-			Tile[] merged = mergeLine(moveLine(line));
+			Tile[] merged = mergeLine(moveLine(line), isScoring);
 			setLine(i, merged, tiles);
 			if (!needAddTile && !compare(line, merged))
 			{
@@ -253,7 +252,7 @@ public class Game2048 extends JPanel
 		}
 	}
 
-	private Tile[] mergeLine(Tile[] oldLine)
+	private Tile[] mergeLine(Tile[] oldLine, boolean isScoring)
 	{
 		LinkedList<Tile> list = new LinkedList<Tile>();
 		for (int i = 0; i < 4 && !oldLine[i].isEmpty(); i++)
@@ -262,7 +261,10 @@ public class Game2048 extends JPanel
 			if (i < 3 && oldLine[i].value == oldLine[i + 1].value)
 			{
 				num *= 2;
-				myScore += num;
+				if(isScoring)
+				{
+					myScore += num;
+				}
 				//int ourTarget = 2048;
 				int ourTarget = Integer.MAX_VALUE;
 				if (num == ourTarget)
@@ -377,7 +379,7 @@ public class Game2048 extends JPanel
 	public Tile[] whatIfLeft(Tile[] whatIf)
 	{
 		Tile[] clonedTiles = cloneTiles(whatIf);
-		leftUsingTiles(clonedTiles);
+		leftUsingTiles(clonedTiles, false);
 		return clonedTiles;
 	}
 
@@ -385,7 +387,7 @@ public class Game2048 extends JPanel
 	{
 		Tile[] clonedTiles = cloneTiles(whatIf);
 		clonedTiles = rotateUsingTiles(180, clonedTiles);
-		leftUsingTiles(clonedTiles);
+		leftUsingTiles(clonedTiles, false);
 		clonedTiles = rotateUsingTiles(180, clonedTiles);
 		return clonedTiles;
 	}
@@ -394,7 +396,7 @@ public class Game2048 extends JPanel
 	{
 		Tile[] clonedTiles = cloneTiles(whatIf);
 		clonedTiles = rotateUsingTiles(270, clonedTiles);
-		leftUsingTiles(clonedTiles);
+		leftUsingTiles(clonedTiles, false);
 		clonedTiles = rotateUsingTiles(90, clonedTiles);
 		return clonedTiles;
 	}
@@ -403,7 +405,7 @@ public class Game2048 extends JPanel
 	{
 		Tile[] clonedTiles = cloneTiles(whatIf);
 		clonedTiles = rotateUsingTiles(90, clonedTiles);
-		leftUsingTiles(clonedTiles);
+		leftUsingTiles(clonedTiles, false);
 		clonedTiles = rotateUsingTiles(270, clonedTiles);
 		return clonedTiles;
 	}
