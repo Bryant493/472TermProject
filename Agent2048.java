@@ -51,7 +51,7 @@ public class Agent2048 extends JPanel
 		Node current = new Node(game.getMyTiles(), strategy);
 		double hVal = 0;
 		buildTree(current, true, depth);
-		while (!game.myLose)
+		while (!weLost(current))
 		{
 			hVal = expectiMiniMax(current, depth, true);
 			for (Node n : current.getChildren())
@@ -260,37 +260,36 @@ public class Agent2048 extends JPanel
 
 	public static void main(String args[]) throws InterruptedException
 	{
-		Game2048 twentyFortyEight = new Game2048();
-		
-		String strategy = args[0];
-		int depth = Integer.parseInt(args[1]);
-		
-		Agent2048 agent = new Agent2048(twentyFortyEight, strategy);
-		
-		JFrame game = new JFrame();
-		game.setTitle("2048 Game");
-		game.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-		game.setSize(340, 400);
-		game.setResizable(false);
-		game.setVisible(true);
-		game.add(twentyFortyEight);
-		game.setLocationRelativeTo(null);
+		for(int i = 0; i < 25; i++) {
+			Game2048 twentyFortyEight = new Game2048();
 
-		long start = System.nanoTime();
-		agent.runAI(depth);
-		long stop = System.nanoTime();
+			String strategy = args[0];
+			int depth = Integer.parseInt(args[1]);
 
-		int max = twentyFortyEight.getMyTiles()[0].value;
-		for (Tile t : twentyFortyEight.getMyTiles())
-		{
-			if (t.value > max)
+			Agent2048 agent = new Agent2048(twentyFortyEight, strategy);
+
+			JFrame game = new JFrame();
+			game.setTitle("2048 Game");
+			game.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+			game.setSize(340, 400);
+			game.setResizable(false);
+			game.setVisible(true);
+			game.add(twentyFortyEight);
+			game.setLocationRelativeTo(null);
+
+			long start = System.nanoTime();
+			agent.runAI(depth);
+			long stop = System.nanoTime();
+
+			int max = twentyFortyEight.getMyTiles()[0].value;
+			for (Tile t : twentyFortyEight.getMyTiles())
 			{
-				max = t.value;
+				if (t.value > max)
+				{
+					max = t.value;
+				}
 			}
+			System.out.println(max);
 		}
-		System.out.println(max);
-		System.out.println((double) (stop - start) / 1000000000);
-		long maxBytes = Runtime.getRuntime().maxMemory();
-		System.out.println(maxBytes);
 	}
 }
