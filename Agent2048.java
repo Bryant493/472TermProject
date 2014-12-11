@@ -171,12 +171,7 @@ public class Agent2048 extends JPanel
 
 			for (int i = 0; i < start.getChildren().size(); i++)
 			{
-				// for each, check if we have won the game, if we haven't then
-				// continue building
-				if (!weWon(start.getChildren().get(i)))
-				{
-					buildTree(start.getChildren().get(i), false, depth - 1);
-				}
+				buildTree(start.getChildren().get(i), false, depth - 1);
 			}
 		}
 
